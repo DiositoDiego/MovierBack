@@ -38,21 +38,6 @@ Resources:
       Name: MovieApi
       StageName: Prod
 
-  HelloWorldFunction:
-    Type: AWS::Serverless::Function
-    Properties:
-      CodeUri: hello_world/
-      Handler: app.lambda_handler
-      Runtime: python3.12
-      Architectures:
-        - x86_64
-      Events:
-        HelloWorld:
-          Type: Api
-          Properties:
-            Path: /hello
-            Method: get
-
   CreateMovieFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -130,13 +115,6 @@ Resources:
             Method: put
 
 Outputs:
-  HelloWorldApi:
-    Description: "API Gateway endpoint URL for Prod stage for Hello World function"
-    Value: !Sub "https://${MovieApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/hello/"
-  HelloWorldFunction:
-    Description: "Hello World Lambda Function ARN"
-    Value: !GetAtt HelloWorldFunction.Arn
-
   CreateMovieApi:
     Description: "API Gateway endpoint URL for Prod stage for create movie function"
     Value: !Sub "https://${MovieApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/create"

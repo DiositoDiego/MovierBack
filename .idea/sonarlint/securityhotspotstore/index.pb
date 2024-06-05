@@ -13,3 +13,7 @@ D
 disable_movie/app.py,e/e/eed7010e59482b159f8c53a5f103b18e2209ab7f
 C
 update_movie/app.py,1/e/1e9ac6202a0fbf5769a06cf35b04b39effebd896
+>
+samconfig.toml,1/0/103b5805b05d10eb9576f108b4aa49bf96baece2
+;
+__init__.py,6/0/60ad4f3d2e9b04a9b0a0bb97ab6a8a4c018b785e
