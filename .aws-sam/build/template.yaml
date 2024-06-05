@@ -1,0 +1,242 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: 'MovierBack
+
+  Sample SAM Template for MovierBack
+
+  '
+Globals:
+  Function:
+    Timeout: 3
+    MemorySize: 128
+Resources:
+  LambdaExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Action:
+          - sts:AssumeRole
+          Principal:
+            Service:
+            - lambda.amazonaws.com
+      Policies:
+      - PolicyName: LambdaLoggingPolicy
+        PolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+          - Effect: Allow
+            Action:
+            - logs:CreateLogGroup
+            - logs:CreateLogStream
+            - logs:PutLogEvents
+            Resource: arn:aws:logs:*:*:*
+  MovieApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      Name: MovieApi
+      StageName: Prod
+  HelloWorldFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: HelloWorldFunction
+      Handler: app.lambda_handler
+      Runtime: python3.12
+      Architectures:
+      - x86_64
+      Events:
+        HelloWorld:
+          Type: Api
+          Properties:
+            Path: /hello
+            Method: get
+    Metadata:
+      SamResourceId: HelloWorldFunction
+  CreateMovieFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: CreateMovieFunction
+      Handler: app.lambda_handler
+      Runtime: python3.12
+      Architectures:
+      - x86_64
+      Events:
+        CreateMovie:
+          Type: Api
+          Properties:
+            Path: /create
+            RestApiId:
+              Ref: MovieApi
+            Method: post
+    Metadata:
+      SamResourceId: CreateMovieFunction
+  GetMovieFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: GetMovieFunction
+      Handler: app.lambda_handler
+      Runtime: python3.12
+      Architectures:
+      - x86_64
+      Events:
+        GetMovie:
+          Type: Api
+          Properties:
+            Path: /getAll
+            RestApiId:
+              Ref: MovieApi
+            Method: get
+    Metadata:
+      SamResourceId: GetMovieFunction
+  DisableMovieFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: DisableMovieFunction
+      Handler: app.lambda_handler
+      Runtime: python3.12
+      Architectures:
+      - x86_64
+      Events:
+        DisableMovie:
+          Type: Api
+          Properties:
+            Path: /disable/{id}
+            RestApiId:
+              Ref: MovieApi
+            Method: put
+    Metadata:
+      SamResourceId: DisableMovieFunction
+  EnableMovieFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: EnableMovieFunction
+      Handler: app.lambda_handler
+      Runtime: python3.12
+      Architectures:
+      - x86_64
+      Events:
+        EnableMovie:
+          Type: Api
+          Properties:
+            Path: /enable/{id}
+            RestApiId:
+              Ref: MovieApi
+            Method: put
+    Metadata:
+      SamResourceId: EnableMovieFunction
+  UpdateMovieFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: UpdateMovieFunction
+      Handler: app.lambda_handler
+      Runtime: python3.12
+      Architectures:
+      - x86_64
+      Events:
+        UpdateMovie:
+          Type: Api
+          Properties:
+            Path: /update/{id}
+            RestApiId:
+              Ref: MovieApi
+            Method: put
+    Metadata:
+      SamResourceId: UpdateMovieFunction
+  MarkMovieAsWatchedFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: MarkMovieAsWatchedFunction
+      Handler: app.lambda_handler
+      Runtime: python3.12
+      Architectures:
+      - x86_64
+      Events:
+        MarkAsWatched:
+          Type: Api
+          Properties:
+            Path: /movie/{id}/watched
+            RestApiId:
+              Ref: MovieApi
+            Method: post
+    Metadata:
+      SamResourceId: MarkMovieAsWatchedFunction
+Outputs:
+  HelloWorldApi:
+    Description: API Gateway endpoint URL for Prod stage for Hello World function
+    Value:
+      Fn::Sub: https://${MovieApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/hello
+  HelloWorldFunction:
+    Description: Hello World Lambda Function ARN
+    Value:
+      Fn::GetAtt:
+      - HelloWorldFunction
+      - Arn
+  CreateMovieApi:
+    Description: API Gateway endpoint URL for Prod stage for create movie function
+    Value:
+      Fn::Sub: https://${MovieApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/create
+  CreateMovieFunction:
+    Description: Create Movie Lambda Function ARN
+    Value:
+      Fn::GetAtt:
+      - CreateMovieFunction
+      - Arn
+  GetMovieApi:
+    Description: API Gateway endpoint URL for Prod stage for get movie function
+    Value:
+      Fn::Sub: https://${MovieApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/getAll
+  GetMovieFunction:
+    Description: Get Movie Lambda Function ARN
+    Value:
+      Fn::GetAtt:
+      - GetMovieFunction
+      - Arn
+  DisableMovieApi:
+    Description: API Gateway endpoint URL for Prod stage for disable movie function
+    Value:
+      Fn::Sub: https://${MovieApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/disable/{id}
+  DisableMovieFunction:
+    Description: Disable Movie Lambda Function ARN
+    Value:
+      Fn::GetAtt:
+      - DisableMovieFunction
+      - Arn
+  EnableMovieApi:
+    Description: API Gateway endpoint URL for Prod stage for enable movie function
+    Value:
+      Fn::Sub: https://${MovieApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/enable/{id}
+  EnableMovieFunction:
+    Description: Enable Movie Lambda Function ARN
+    Value:
+      Fn::GetAtt:
+      - EnableMovieFunction
+      - Arn
+  UpdateMovieApi:
+    Description: API Gateway endpoint URL for Prod stage for update movie function
+    Value:
+      Fn::Sub: https://${MovieApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/update/{id}
+  UpdateMovieFunction:
+    Description: Update Movie Lambda Function ARN
+    Value:
+      Fn::GetAtt:
+      - UpdateMovieFunction
+      - Arn
+  MarkMovieAsWatchedApi:
+    Description: API Gateway endpoint URL for Prod stage for mark movie as watched
+      function
+    Value:
+      Fn::Sub: https://${MovieApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/movie/{id}/watched
+  MarkMovieAsWatchedFunction:
+    Description: Mark Movie as Watched Lambda Function ARN
+    Value:
+      Fn::GetAtt:
+      - MarkMovieAsWatchedFunction
+      - Arn
+  LambdaExecutionRole:
+    Description: Implicit IAM Role created for lambdas functions
+    Value:
+      Fn::GetAtt:
+      - LambdaExecutionRole
+      - Arn
