@@ -36,12 +36,17 @@ Resources:
     Properties:
       Name: MovieApi
       StageName: Prod
+  CommentApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      Name: CommentApi
+      StageName: Prod
   HelloWorldFunction:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: HelloWorldFunction
       Handler: app.lambda_handler
-      Runtime: python3.12
+      Runtime: python3.11
       Architectures:
       - x86_64
       Events:
@@ -57,7 +62,7 @@ Resources:
     Properties:
       CodeUri: CreateMovieFunction
       Handler: app.lambda_handler
-      Runtime: python3.12
+      Runtime: python3.11
       Architectures:
       - x86_64
       Events:
@@ -75,7 +80,7 @@ Resources:
     Properties:
       CodeUri: GetMovieFunction
       Handler: app.lambda_handler
-      Runtime: python3.12
+      Runtime: python3.11
       Architectures:
       - x86_64
       Events:
@@ -93,7 +98,7 @@ Resources:
     Properties:
       CodeUri: DisableMovieFunction
       Handler: app.lambda_handler
-      Runtime: python3.12
+      Runtime: python3.11
       Architectures:
       - x86_64
       Events:
@@ -111,7 +116,7 @@ Resources:
     Properties:
       CodeUri: EnableMovieFunction
       Handler: app.lambda_handler
-      Runtime: python3.12
+      Runtime: python3.11
       Architectures:
       - x86_64
       Events:
@@ -129,7 +134,7 @@ Resources:
     Properties:
       CodeUri: UpdateMovieFunction
       Handler: app.lambda_handler
-      Runtime: python3.12
+      Runtime: python3.11
       Architectures:
       - x86_64
       Events:
@@ -142,6 +147,42 @@ Resources:
             Method: put
     Metadata:
       SamResourceId: UpdateMovieFunction
+  CreateCommentFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: CreateCommentFunction
+      Handler: app.lambda_handler
+      Runtime: python3.11
+      Architectures:
+      - x86_64
+      Events:
+        CreateComment:
+          Type: Api
+          Properties:
+            Path: /create
+            RestApiId:
+              Ref: CommentApi
+            Method: post
+    Metadata:
+      SamResourceId: CreateCommentFunction
+  GetCommentsFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: GetCommentsFunction
+      Handler: app.lambda_handler
+      Runtime: python3.11
+      Architectures:
+      - x86_64
+      Events:
+        GetComments:
+          Type: Api
+          Properties:
+            Path: /getAll
+            RestApiId:
+              Ref: CommentApi
+            Method: get
+    Metadata:
+      SamResourceId: GetCommentsFunction
 Outputs:
   HelloWorldApi:
     Description: API Gateway endpoint URL for Prod stage for Hello World function
@@ -202,6 +243,26 @@ Outputs:
     Value:
       Fn::GetAtt:
       - UpdateMovieFunction
+      - Arn
+  CreateCommentApi:
+    Description: API Gateway endpoint URL for Prod stage for create comment function
+    Value:
+      Fn::Sub: https://${CommentApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/create
+  CreateCommentFunction:
+    Description: Create Comment Lambda Function ARN
+    Value:
+      Fn::GetAtt:
+      - CreateCommentFunction
+      - Arn
+  GetCommentsApi:
+    Description: API Gateway endpoint URL for Prod stage for create movie function
+    Value:
+      Fn::Sub: https://${CommentApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/getAll
+  GetCommentsFunction:
+    Description: Get Comments Lambda Function ARN
+    Value:
+      Fn::GetAtt:
+      - GetCommentsFunction
       - Arn
   LambdaExecutionRole:
     Description: Implicit IAM Role created for lambdas functions
