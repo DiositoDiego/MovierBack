@@ -6,9 +6,26 @@ rds_user = "admin"
 rds_password = "admin123"
 rds_db = "movier"
 
+
 def lambda_handler(event, context):
     try:
-        comments = get_comments_with_status(1)
+        body = json.loads(event['body'])
+        movie = body.get('movie_id')
+    except Exception as e:
+        return {
+            'statusCode': 400,
+            'body': json.dumps(
+                {'message': 'Error al obtener los parámetros del cuerpo de la solicitud', 'error': str(e)})
+        }
+    if not movie:
+        return {
+            'statusCode': 400,
+            'body': json.dumps({'message': 'Falta el parámetro movie_id'})
+        }
+
+    try:
+        movie = int(movie)
+        comments = get_comments_with_movie_id(movie)
     except Exception as e:
         return {
             'statusCode': 500,
@@ -21,7 +38,7 @@ def lambda_handler(event, context):
     }
 
 
-def get_comments_with_status(status):
+def get_comments_with_movie_id(movie_id):
     connection = pymysql.connect(host=rds_host, user=rds_user, password=rds_password, db=rds_db)
     comments = []
 
@@ -32,7 +49,7 @@ def get_comments_with_status(status):
                 FROM Comments
                 WHERE movie_id = %s
                 """
-            cursor.execute(query, (status,))
+            cursor.execute(query, (movie_id,))
             result = cursor.fetchall()
             for row in result:
                 comment = {
