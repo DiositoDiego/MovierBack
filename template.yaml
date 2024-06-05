@@ -8,7 +8,7 @@ Description: >
 Globals:
   Function:
     Timeout: 3
-    MemorySize: 128  # Ajuste mínimo a 128 MB
+    MemorySize: 128
 
 Resources:
   LambdaExecutionRole:
@@ -31,7 +31,8 @@ Resources:
                   - logs:CreateLogGroup
                   - logs:CreateLogStream
                   - logs:PutLogEvents
-                Resource: arn:aws:logs:*:*:*
+                Resource: '*'
+
   MovieApi:
     Type: AWS::Serverless::Api
     Properties:
@@ -73,6 +74,7 @@ Resources:
             Path: /create
             RestApiId: !Ref MovieApi
             Method: post
+
   GetMovieFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -82,12 +84,13 @@ Resources:
       Architectures:
         - x86_64
       Events:
-        CreateMovie:
+        GetMovie:
           Type: Api
           Properties:
             Path: /getAll
             RestApiId: !Ref MovieApi
             Method: get
+
   DisableMovieFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -97,12 +100,13 @@ Resources:
       Architectures:
         - x86_64
       Events:
-        CreateMovie:
+        DisableMovie:
           Type: Api
           Properties:
             Path: /disable/{id}
             RestApiId: !Ref MovieApi
             Method: put
+
   EnableMovieFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -112,12 +116,13 @@ Resources:
       Architectures:
         - x86_64
       Events:
-        CreateMovie:
+        EnableMovie:
           Type: Api
           Properties:
             Path: /enable/{id}
             RestApiId: !Ref MovieApi
             Method: put
+
   UpdateMovieFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -164,6 +169,38 @@ Resources:
             RestApiId: !Ref CommentApi
             Method: get
 
+  WatchedMovieFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: watched_movie/
+      Handler: app.lambda_handler
+      Runtime: python3.12
+      Architectures:
+        - x86_64
+      Events:
+        WatchedMovie:
+          Type: Api
+          Properties:
+            Path: /watched
+            RestApiId: !Ref MovieApi
+            Method: post
+
+  GetWatchedMovieFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: get_watched_movies_user/
+      Handler: app.lambda_handler
+      Runtime: python3.12
+      Architectures:
+        - x86_64
+      Events:
+        WatchedMovie:
+          Type: Api
+          Properties:
+            Path: /watched/user/{id}
+            RestApiId: !Ref MovieApi
+            Method: get
+
 Outputs:
   HelloWorldApi:
     Description: "API Gateway endpoint URL for Prod stage for Hello World function"
@@ -180,29 +217,29 @@ Outputs:
     Value: !GetAtt CreateMovieFunction.Arn
 
   GetMovieApi:
-    Description: "API Gateway endpoint URL for Prod stage for create movie function"
+    Description: "API Gateway endpoint URL for Prod stage for get movies function"
     Value: !Sub "https://${MovieApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/getAll"
   GetMovieFunction:
     Description: "Get Movie Lambda Function ARN"
     Value: !GetAtt GetMovieFunction.Arn
 
   DisableMovieApi:
-    Description: "API Gateway endpoint URL for Prod stage for create movie function"
+    Description: "API Gateway endpoint URL for Prod stage for disable movie function"
     Value: !Sub "https://${MovieApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/disable/{id}"
   DisableMovieFunction:
-    Description: "Get Movie Lambda Function ARN"
+    Description: "Disable Movie Lambda Function ARN"
     Value: !GetAtt DisableMovieFunction.Arn
 
   EnableMovieApi:
-    Description: "API Gateway endpoint URL for Prod stage for create movie function"
+    Description: "API Gateway endpoint URL for Prod stage for enable movie function"
     Value: !Sub "https://${MovieApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/enable/{id}"
   EnableMovieFunction:
-    Description: "Get Movie Lambda Function ARN"
+    Description: "Enable Movie Lambda Function ARN"
     Value: !GetAtt EnableMovieFunction.Arn
 
   UpdateMovieApi:
     Description: "API Gateway endpoint URL for Prod stage for update movie function"
-    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/update/{id}"
+    Value: !Sub "https://${MovieApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/update/{id}"
   UpdateMovieFunction:
     Description: "Update Movie Lambda Function ARN"
     Value: !GetAtt UpdateMovieFunction.Arn
@@ -220,6 +257,20 @@ Outputs:
     Description: "Get Comments Lambda Function ARN"
     Value: !GetAtt GetCommentsFunction.Arn
 
+  WatchedMovieApi:
+    Description: "API Gateway endpoint URL for Prod stage for watched movie function"
+    Value: !Sub "https://${MovieApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/watched"
+  WatchedMovieFunction:
+    Description: "Watched Movie Lambda Function ARN"
+    Value: !GetAtt WatchedMovieFunction.Arn
+
+  GetWatchedMovieApi:
+    Description: "API Gateway endpoint URL for Prod stage for watched movie function"
+    Value: !Sub "https://${MovieApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/watched"
+  GetWatchedMovieFunction:
+    Description: "Watched Movie Lambda Function ARN"
+    Value: !GetAtt GetWatchedMovieFunction.Arn
+
   LambdaExecutionRole:
-    Description: "Implicit IAM Role created for lambdas functions"
+    Description: "Implicit IAM Role created for lambda functions"
     Value: !GetAtt LambdaExecutionRole.Arn
