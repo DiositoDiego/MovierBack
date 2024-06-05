@@ -13,7 +13,7 @@ def lambda_handler(event, context):
         body = json.loads(event['body'])
         title = body.get('title')
         description = body.get('description')
-        genre = body.get('genre')
+        genere = body.get('genere')
         image = body.get('image')
         status = body.get('status')
     except Exception as e:
@@ -22,14 +22,14 @@ def lambda_handler(event, context):
             'body': json.dumps({'message': 'Error al obtener los parámetros del cuerpo de la solicitud', 'error': str(e)})
         }
 
-    if title is None or description is None or genre is None or image is None or status is None:
+    if title is None or description is None or genere is None or image is None or status is None:
         return {
             'statusCode': 400,
             'body': json.dumps({'message': 'Faltan parámetros'})
         }
 
     try:
-        insert_into_movies(title, description, genre, image, status)
+        insert_into_movies(title, description, genere, image, status)
     except Exception as e:
         return {
             'statusCode': 500,
@@ -41,15 +41,15 @@ def lambda_handler(event, context):
         'body': json.dumps({'message': 'Película insertada correctamente'})
     }
 
-def insert_into_movies(title, description, genre, image, status):
+def insert_into_movies(title, description, genere, image, status):
     connection = pymysql.connect(host=rds_host, user=rds_user, password=rds_password, db=rds_db)
 
     try:
         with connection.cursor() as cursor:
             insert_query = """
-                INSERT INTO Movies (title, description, genre, image, status) VALUES (%s, %s, %s, %s, %s)
+                INSERT INTO Movies (title, description, genere, image, status) VALUES (%s, %s, %s, %s, %s)
                 """
-            cursor.execute(insert_query, (title, description, genre, image, status))
+            cursor.execute(insert_query, (title, description, genere, image, status))
             connection.commit()
     finally:
         connection.close()

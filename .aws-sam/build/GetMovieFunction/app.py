@@ -29,7 +29,7 @@ def get_movies_with_status(status):
     try:
         with connection.cursor() as cursor:
             query = """
-                SELECT title, description, genre, image, status
+                SELECT id,title, description, genere, image, status
                 FROM Movies
                 WHERE status = %s
                 """
@@ -37,11 +37,12 @@ def get_movies_with_status(status):
             result = cursor.fetchall()
             for row in result:
                 movie = {
-                    'title': row[0],
-                    'description': row[1],
-                    'genre': row[2],
-                    'image': row[3],
-                    'status': row[4]
+                    'id': row[0],
+                    'title': row[1],
+                    'description': row[2],
+                    'genere': row[3],
+                    'image': row[4],
+                    'status': row[5]
                 }
                 movies.append(movie)
     finally:

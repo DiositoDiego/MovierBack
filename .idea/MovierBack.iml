@@ -2,25 +2,16 @@
 <module type="PYTHON_MODULE" version="4">
   <component name="NewModuleRootManager">
     <content url="file://$MODULE_DIR$">
-      <excludeFolder url="file://$MODULE_DIR$/.aws-sam/build/CreateCommentFunction/charset_normalizer.libs" />
-      <excludeFolder url="file://$MODULE_DIR$/.aws-sam/build/CreateMovieFunction/charset_normalizer.libs" />
-      <excludeFolder url="file://$MODULE_DIR$/.aws-sam/build/DisableMovieFunction/charset_normalizer.libs" />
-      <excludeFolder url="file://$MODULE_DIR$/.aws-sam/build/EnableMovieFunction/charset_normalizer.libs" />
-      <excludeFolder url="file://$MODULE_DIR$/.aws-sam/build/GetCommentsFunction/charset_normalizer.libs" />
-      <excludeFolder url="file://$MODULE_DIR$/.aws-sam/build/GetMovieFunction/charset_normalizer.libs" />
-      <excludeFolder url="file://$MODULE_DIR$/.aws-sam/build/HelloWorldFunction/charset_normalizer.libs" />
-      <excludeFolder url="file://$MODULE_DIR$/.aws-sam/build/UpdateMovieFunction/charset_normalizer.libs" />
-      <excludeFolder url="file://$MODULE_DIR$/.aws-sam/cache" />
-      <excludeFolder url="file://$MODULE_DIR$/.aws-sam/deps/01ff6251-e5e4-4570-998a-80c5a6ad257f" />
-      <excludeFolder url="file://$MODULE_DIR$/.aws-sam/deps/40731211-0570-4e4a-867d-a056bb2b6c0b" />
-      <excludeFolder url="file://$MODULE_DIR$/.aws-sam/deps/59e7d72b-ef41-4163-a8d3-dbe77c1f7978" />
-      <excludeFolder url="file://$MODULE_DIR$/.aws-sam/deps/82414f15-ee4b-4dcd-9482-fa9b66bc4557" />
-      <excludeFolder url="file://$MODULE_DIR$/.aws-sam/deps/a838fa95-0936-44f7-adcd-073c47ccab24" />
-      <excludeFolder url="file://$MODULE_DIR$/.aws-sam/deps/acf26ec4-f1f2-4f6e-8846-b9def0489e15" />
-      <excludeFolder url="file://$MODULE_DIR$/.aws-sam/deps/d860dd23-a829-4daf-938e-e2d717355c98" />
-      <excludeFolder url="file://$MODULE_DIR$/.aws-sam/deps/f424ccca-4bb2-440d-8eb0-d362d4bbe6d3" />
+      <excludeFolder url="file://$MODULE_DIR$/venv" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+  </component>
+  <component name="PyDocumentationSettings">
+    <option name="format" value="PLAIN" />
+    <option name="myDocStringFormat" value="Plain" />
+  </component>
+  <component name="TestRunnerService">
+    <option name="PROJECT_TEST_RUNNER" value="py.test" />
   </component>
 </module>
