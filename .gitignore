@@ -1,5 +1,4 @@
 /.aws-sam/
 /venv/
 .idea/
-venv/
-.aws-sam/git
+
