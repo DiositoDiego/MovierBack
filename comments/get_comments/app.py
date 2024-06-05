@@ -9,7 +9,7 @@ rds_db = "movier"
 
 def lambda_handler(event, context):
     try:
-        body = json.loads(event['body'])
+        body = json.loads(event['body']) if isinstance(event['body'], str) else event['body']
         movie = body.get('movie_id')
     except Exception as e:
         return {
@@ -21,6 +21,27 @@ def lambda_handler(event, context):
         return {
             'statusCode': 400,
             'body': json.dumps({'message': 'Falta el parámetro movie_id'})
+        }
+
+    try:
+        if movie <= 0:
+            raise ValueError('El parámetro movie_id debe ser un entero positivo')
+    except ValueError as e:
+        return {
+            'statusCode': 400,
+            'body': json.dumps({'message': str(e)})
+        }
+
+    try:
+        if not movie_exists(movie):
+            return {
+                'statusCode': 400,
+                'body': json.dumps({'message': 'La película no existe'})
+            }
+    except Exception as e:
+        return {
+            'statusCode': 500,
+            'body': json.dumps({'message': 'Error al verificar la existencia de la película', 'error': str(e)})
         }
 
     try:
@@ -36,6 +57,17 @@ def lambda_handler(event, context):
         'statusCode': 200,
         'body': json.dumps({'Comentarios': comments})
     }
+
+def movie_exists(movie_id):
+    connection = pymysql.connect(host=rds_host, user=rds_user, password=rds_password, db=rds_db)
+    try:
+        with connection.cursor() as cursor:
+            check_query = "SELECT COUNT(*) FROM Movies WHERE id = %s"
+            cursor.execute(check_query, (movie_id,))
+            result = cursor.fetchone()
+            return result[0] > 0
+    finally:
+        connection.close()
 
 
 def get_comments_with_movie_id(movie_id):
