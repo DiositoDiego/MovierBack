@@ -25,7 +25,7 @@ def lambda_handler(event, context):
         request_body = json.loads(event['body'])
         title = request_body.get('title')
         description = request_body.get('description')
-        genere = request_body.get('genere')
+        genre = request_body.get('genre')
         image = request_body.get('image')
         status = request_body.get('status')
     except Exception as e:
@@ -34,14 +34,19 @@ def lambda_handler(event, context):
             'body': json.dumps({'message': 'Error al obtener los datos de la película del cuerpo de la solicitud', 'error': str(e)})
         }
 
-    if not any([title, description, genere, image, status]):
+    if not any([title, description, genre, image, status]):
         return {
             'statusCode': 400,
             'body': json.dumps({'message': 'Faltan campos a actualizar'})
         }
 
     try:
-        update_movie(movie_id, title, description, genere, image, status)
+        if title and title_exists(title, movie_id):
+            return {
+                'statusCode': 400,
+                'body': json.dumps({'message': 'La película con el mismo título ya existe'})
+            }
+        update_movie(movie_id, title, description, genre, image, status)
     except Exception as e:
         return {
             'statusCode': 500,
@@ -53,17 +58,27 @@ def lambda_handler(event, context):
         'body': json.dumps({'message': 'Película actualizada correctamente'})
     }
 
-def update_movie(movie_id, title, description, genere, image, status):
+def title_exists(title, movie_id):
     connection = pymysql.connect(host=rds_host, user=rds_user, password=rds_password, db=rds_db)
+    try:
+        with connection.cursor() as cursor:
+            check_query = "SELECT COUNT(*) FROM Movies WHERE LOWER(title) = LOWER(%s) AND id != %s"
+            cursor.execute(check_query, (title, movie_id))
+            result = cursor.fetchone()
+            return result[0] > 0
+    finally:
+        connection.close()
 
+def update_movie(movie_id, title, description, genre, image, status):
+    connection = pymysql.connect(host=rds_host, user=rds_user, password=rds_password, db=rds_db)
     try:
         with connection.cursor() as cursor:
             update_query = """
                 UPDATE Movies
-                SET title = %s, description = %s, genere = %s, image = %s, status = %s
+                SET title = %s, description = %s, genre = %s, image = %s, status = %s
                 WHERE id = %s
-                """
-            cursor.execute(update_query, (title, description, genere, image, status, movie_id))
+            """
+            cursor.execute(update_query, (title, description, genre, image, status, movie_id))
             connection.commit()
     finally:
         connection.close()

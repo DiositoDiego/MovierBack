@@ -23,7 +23,7 @@ def lambda_handler(event, context):
         }
 
     try:
-        disable_movie(movie_id)
+        message = disable_movie(movie_id)
     except Exception as e:
         return {
             'statusCode': 500,
@@ -32,7 +32,7 @@ def lambda_handler(event, context):
 
     return {
         'statusCode': 200,
-        'body': json.dumps({'message': 'Película deshabilitada correctamente'})
+        'body': json.dumps({'message': message})
     }
 
 def disable_movie(movie_id):
@@ -40,12 +40,25 @@ def disable_movie(movie_id):
 
     try:
         with connection.cursor() as cursor:
+            select_query = """
+                SELECT status
+                FROM Movies
+                WHERE id = %s
+            """
+            cursor.execute(select_query, (movie_id,))
+            result = cursor.fetchone()
+            if result is None:
+                raise Exception("La película no existe")
+            elif result[0] == 0:
+                raise Exception("La película ya está deshabilitada")
+
             update_query = """
                 UPDATE Movies
                 SET status = 0
                 WHERE id = %s
-                """
+            """
             cursor.execute(update_query, (movie_id,))
             connection.commit()
+            return "Película deshabilitada correctamente"
     finally:
         connection.close()
