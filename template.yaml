@@ -150,6 +150,22 @@ Resources:
             RestApiId: !Ref MovieApi
             Method: post
 
+  GetWatchedMovieFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: get_watched_movies_user/
+      Handler: app.lambda_handler
+      Runtime: python3.12
+      Architectures:
+        - x86_64
+      Events:
+        WatchedMovie:
+          Type: Api
+          Properties:
+            Path: /watched/user/{id}
+            RestApiId: !Ref MovieApi
+            Method: get
+
 Outputs:
   HelloWorldApi:
     Description: "API Gateway endpoint URL for Prod stage for Hello World function"
@@ -199,6 +215,13 @@ Outputs:
   WatchedMovieFunction:
     Description: "Watched Movie Lambda Function ARN"
     Value: !GetAtt WatchedMovieFunction.Arn
+
+  GetWatchedMovieApi:
+    Description: "API Gateway endpoint URL for Prod stage for watched movie function"
+    Value: !Sub "https://${MovieApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/watched"
+  GetWatchedMovieFunction:
+    Description: "Watched Movie Lambda Function ARN"
+    Value: !GetAtt GetWatchedMovieFunction.Arn
 
   LambdaExecutionRole:
     Description: "Implicit IAM Role created for lambda functions"
