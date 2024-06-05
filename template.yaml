@@ -8,7 +8,7 @@ Description: >
 Globals:
   Function:
     Timeout: 3
-    MemorySize: 128  # Ajuste mínimo a 128 MB
+    MemorySize: 128
 
 Resources:
   LambdaExecutionRole:
