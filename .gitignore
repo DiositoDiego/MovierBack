@@ -1,6 +1,6 @@
 /.aws-sam/
 /venv/
-.venv
+.venv/
 .idea/
 .aws-sam/git
 .idea/MovierBack.iml
