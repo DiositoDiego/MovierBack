@@ -9,8 +9,7 @@ rds_db = "movier"
 
 def lambda_handler(event, context):
     try:
-        body = json.loads(event['body']) if isinstance(event['body'], str) else event['body']
-        movie = body.get('movie_id')
+        movie = event['pathParameters'].get('id')
     except Exception as e:
         return {
             'statusCode': 400,
@@ -24,6 +23,7 @@ def lambda_handler(event, context):
         }
 
     try:
+        movie = int(movie)
         if movie <= 0:
             raise ValueError('El parámetro movie_id debe ser un entero positivo')
     except ValueError as e:
@@ -85,13 +85,15 @@ def get_comments_with_movie_id(movie_id):
             result = cursor.fetchall()
             for row in result:
                 comment = {
-                    'user_id': row[0],
-                    'movie_id': row[1],
-                    'comment': row[2],
-                    'date': row[3],
+                    'comment_id': row[0],
+                    'user_id': row[1],
+                    'movie_id': row[2],
+                    'comment': row[3],
+                    'date': row[4].strftime('%Y-%m-%d %H:%M:%S')
                 }
                 comments.append(comment)
     finally:
         connection.close()
+
 
     return comments
