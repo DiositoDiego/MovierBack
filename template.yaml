@@ -174,7 +174,7 @@ Resources:
     Properties:
       CodeUri: watched_movie/
       Handler: app.lambda_handler
-      Runtime: python3.12
+      Runtime: python3.11
       Architectures:
         - x86_64
       Events:
@@ -190,7 +190,7 @@ Resources:
     Properties:
       CodeUri: get_watched_movies_user/
       Handler: app.lambda_handler
-      Runtime: python3.12
+      Runtime: python3.11
       Architectures:
         - x86_64
       Events:
