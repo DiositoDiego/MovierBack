@@ -170,7 +170,7 @@ Resources:
   WatchedMovieFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: watched_movie/
+      CodeUri: watched/watched_movie/
       Handler: app.lambda_handler
       Runtime:  python3.12
       Architectures:
@@ -186,7 +186,7 @@ Resources:
   GetWatchedMovieFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: get_watched_movies_user/
+      CodeUri: watched/get_watched_movies_user/
       Handler: app.lambda_handler
       Runtime:  python3.12
       Architectures:
