@@ -165,9 +165,25 @@ Resources:
         GetComments:
           Type: Api
           Properties:
-            Path: /getAll
+            Path: /getComment/{id}
             RestApiId: !Ref CommentApi
             Method: get
+
+  DeleteCommentFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: comments/delete_comment/
+      Handler: app.lambda_handler
+      Runtime: python3.11
+      Architectures:
+        - x86_64
+      Events:
+        DisableMovie:
+          Type: Api
+          Properties:
+            Path: /delete
+            RestApiId: !Ref CommentApi
+            Method: delete
 
   WatchedMovieFunction:
     Type: AWS::Serverless::Function
@@ -251,11 +267,18 @@ Outputs:
     Value: !GetAtt CreateCommentFunction.Arn
 
   GetCommentsApi:
-    Description: "API Gateway endpoint URL for Prod stage for create movie function"
-    Value: !Sub "https://${CommentApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/getAll"
+    Description: "API Gateway endpoint URL for Prod stage for get comments function"
+    Value: !Sub "https://${CommentApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/getComment/{id}"
   GetCommentsFunction:
     Description: "Get Comments Lambda Function ARN"
     Value: !GetAtt GetCommentsFunction.Arn
+
+  DeleteCommentApi:
+    Description: "API Gateway endpoint URL for Prod stage for delete comment function"
+    Value: !Sub "https://${CommentApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/delete"
+  DeleteCommentFunction:
+    Description: "Delete Comment Lambda Function ARN"
+    Value: !GetAtt DeleteCommentFunction.Arn
 
   WatchedMovieApi:
     Description: "API Gateway endpoint URL for Prod stage for watched movie function"
