@@ -45,7 +45,7 @@ jobs:
           pip install -r requirements.txt
       - name: Install dependencies for delete_comment
         run: |
-          cd comment/delete_comment
+          cd comments/delete_comment
           pip install -r requirements.txt
       - name: Install dependencies for get_comments
         run: |
