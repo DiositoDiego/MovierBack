@@ -17,11 +17,11 @@ lint = true
 capabilities = "CAPABILITY_IAM"
 confirm_changeset = true
 resolve_s3 = true
-s3_prefix = "MovierTest"
+s3_prefix = "Movier"
 region = "us-east-2"
 disable_rollback = true
 image_repositories = []
-stack_name = "MovierTest"
+stack_name = "Movier"
 
 [default.package.parameters]
 resolve_s3 = true

@@ -23,11 +23,12 @@ def lambda_handler(event, context):
         }
 
     try:
-        message = disable_movie(movie_id)
+        message = toggle_movie_status(movie_id)
     except Exception as e:
         return {
             'statusCode': 500,
-            'body': json.dumps({'message': 'Error al deshabilitar la película en la base de datos', 'error': str(e)})
+            'body': json.dumps(
+                {'message': 'Error al actualizar el estado de la película en la base de datos', 'error': str(e)})
         }
 
     return {
@@ -35,7 +36,8 @@ def lambda_handler(event, context):
         'body': json.dumps({'message': message})
     }
 
-def disable_movie(movie_id):
+
+def toggle_movie_status(movie_id):
     connection = pymysql.connect(host=rds_host, user=rds_user, password=rds_password, db=rds_db)
 
     try:
@@ -49,16 +51,19 @@ def disable_movie(movie_id):
             result = cursor.fetchone()
             if result is None:
                 raise Exception("La película no existe")
-            elif result[0] == 0:
-                raise Exception("La película ya está deshabilitada")
+
+            current_status = result[0]
+            new_status = 0 if current_status == 1 else 1
 
             update_query = """
                 UPDATE Movies
-                SET status = 0
+                SET status = %s
                 WHERE id = %s
             """
-            cursor.execute(update_query, (movie_id,))
+            cursor.execute(update_query, (new_status, movie_id))
             connection.commit()
-            return "Película deshabilitada correctamente"
+
+            status_message = "habilitada" if new_status == 1 else "deshabilitada"
+            return f"Película {status_message} correctamente"
     finally:
         connection.close()
