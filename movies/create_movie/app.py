@@ -20,10 +20,28 @@ def lambda_handler(event, context):
             'body': json.dumps({'message': 'Error al obtener los parámetros del cuerpo de la solicitud', 'error': str(e)})
         }
 
-    if title is None or description is None or genre is None or image is None:
+    if not all([title, description, genre, image]):
         return {
             'statusCode': 400,
             'body': json.dumps({'message': 'Faltan parámetros'})
+        }
+
+    if not all(isinstance(x, str) and len(x) <= 255 for x in [title, description, genre, image]):
+        return {
+            'statusCode': 400,
+            'body': json.dumps({'message': 'Los parámetros deben ser cadenas de texto de máximo 255 caracteres'})
+        }
+
+    if not isinstance(status, int):
+        return {
+            'statusCode': 400,
+            'body': json.dumps({'message': 'El parámetro status debe ser un número entero'})
+        }
+
+    if not (0 <= status <= 1):
+        return {
+            'statusCode': 400,
+            'body': json.dumps({'message': 'El parámetro status debe ser 0 o 1'})
         }
 
     try:

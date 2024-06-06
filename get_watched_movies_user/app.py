@@ -6,7 +6,6 @@ rds_user = "admin"
 rds_password = "admin123"
 rds_db = "movier"
 
-##hola
 def lambda_handler(event, context):
     try:
         user_id = event['pathParameters'].get('id')
@@ -40,10 +39,10 @@ def get_movies_watched_user(user_id):
     try:
         with connection.cursor() as cursor:
             query = """
-                 SELECT m.id, m.title, m.description, m.genre, m.image
+                SELECT m.id, m.title, m.description, m.genre, m.image
                 FROM WatchedMovies wm
                 JOIN Movies m ON wm.movie_id = m.id
-                WHERE wm.user_id = %s AND wm.status = 1
+                WHERE wm.user_id = %s AND wm.status = 1 AND m.status = 1
             """
             cursor.execute(query, (user_id,))
             result = cursor.fetchall()

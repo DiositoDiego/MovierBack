@@ -45,7 +45,11 @@ Resources:
       Name: CommentApi
       StageName: Prod
 
-
+  WatchedApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      Name: WatchedApi
+      StageName: Prod
 
   CreateMovieFunction:
     Type: AWS::Serverless::Function
@@ -176,7 +180,7 @@ Resources:
           Type: Api
           Properties:
             Path: /watched
-            RestApiId: !Ref MovieApi
+            RestApiId: !Ref WatchedApi
             Method: post
 
   GetWatchedMovieFunction:
@@ -192,7 +196,7 @@ Resources:
           Type: Api
           Properties:
             Path: /watched/user/{id}
-            RestApiId: !Ref MovieApi
+            RestApiId: !Ref WatchedApi
             Method: get
 
 Outputs:
@@ -250,14 +254,14 @@ Outputs:
 
   WatchedMovieApi:
     Description: "API Gateway endpoint URL for Prod stage for watched movie function"
-    Value: !Sub "https://${MovieApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/watched"
+    Value: !Sub "https://${WatchedApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/watched"
   WatchedMovieFunction:
     Description: "Watched Movie Lambda Function ARN"
     Value: !GetAtt WatchedMovieFunction.Arn
 
   GetWatchedMovieApi:
     Description: "API Gateway endpoint URL for Prod stage for watched movie function"
-    Value: !Sub "https://${MovieApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/watched"
+    Value: !Sub "https://${WatchedApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/watched"
   GetWatchedMovieFunction:
     Description: "Watched Movie Lambda Function ARN"
     Value: !GetAtt GetWatchedMovieFunction.Arn
