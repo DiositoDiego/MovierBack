@@ -6,7 +6,7 @@ rds_user = "admin"
 rds_password = "admin123"
 rds_db = "movier"
 
-
+#sd
 def lambda_handler(event, context):
     try:
         movies = get_movies_with_status(1)

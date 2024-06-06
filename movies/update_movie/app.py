@@ -28,24 +28,50 @@ def lambda_handler(event, context):
         genre = request_body.get('genre')
         image = request_body.get('image')
         status = request_body.get('status')
-    except Exception as e:
-        return {
-            'statusCode': 400,
-            'body': json.dumps({'message': 'Error al obtener los datos de la película del cuerpo de la solicitud', 'error': str(e)})
-        }
 
-    if not any([title, description, genre, image, status]):
-        return {
-            'statusCode': 400,
-            'body': json.dumps({'message': 'Faltan campos a actualizar'})
-        }
+        # Validaciones
+        if not any([title, description, genre, image]):
+            return {
+                'statusCode': 400,
+                'body': json.dumps({'message': 'Faltan campos a actualizar'})
+            }
 
-    try:
+        if title and len(title) > 255:
+            return {
+                'statusCode': 400,
+                'body': json.dumps({'message': 'El título no debe exceder los 255 caracteres'})
+            }
+
+        if description and len(description) > 255:
+            return {
+                'statusCode': 400,
+                'body': json.dumps({'message': 'La descripción no debe exceder los 255 caracteres'})
+            }
+
+        if genre and len(genre) > 255:
+            return {
+                'statusCode': 400,
+                'body': json.dumps({'message': 'El género no debe exceder los 255 caracteres'})
+            }
+
+        if image and len(image) > 255:
+            return {
+                'statusCode': 400,
+                'body': json.dumps({'message': 'La URL de la imagen no debe exceder los 255 caracteres'})
+            }
+
+        if status is not None:
+            return {
+                'statusCode': 400,
+                'body': json.dumps({'message': 'No se permite actualizar el campo "status"'})
+            }
+
         if title and title_exists(title, movie_id):
             return {
                 'statusCode': 400,
                 'body': json.dumps({'message': 'La película con el mismo título ya existe'})
             }
+
         update_movie(movie_id, title, description, genre, image, status)
     except Exception as e:
         return {
@@ -75,10 +101,10 @@ def update_movie(movie_id, title, description, genre, image, status):
         with connection.cursor() as cursor:
             update_query = """
                 UPDATE Movies
-                SET title = %s, description = %s, genre = %s, image = %s, status = %s
+                SET title = %s, description = %s, genre = %s, image = %s
                 WHERE id = %s
             """
-            cursor.execute(update_query, (title, description, genre, image, status, movie_id))
+            cursor.execute(update_query, (title, description, genre, image, movie_id))
             connection.commit()
     finally:
         connection.close()
