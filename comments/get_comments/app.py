@@ -94,4 +94,5 @@ def get_comments_with_movie_id(movie_id):
     finally:
         connection.close()
 
+
     return comments
