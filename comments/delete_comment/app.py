@@ -78,7 +78,7 @@ def lambda_handler(event, context):
         'body': json.dumps({'message': 'Comentario eliminado exitosamente'})
     }
 
-
+#funcion para obtener el comentario
 def get_comment_with_id(comment_id):
     connection = pymysql.connect(host=rds_host, user=rds_user, password=rds_password, db=rds_db)
     try:
