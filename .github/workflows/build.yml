@@ -88,7 +88,7 @@ jobs:
       - name: Build SAM application
         run: sam build
       - name: Deploy SAM application
-        run: sam deploy --no-confirm-changeset --no-fail-on-empty-changeset --stack-name Movier --capabilities CAPABILITY_IAM --profile utez9c-diegoaf
+        run: sam deploy --no-confirm-changeset --no-fail-on-empty-changeset --stack-name Movier --capabilities CAPABILITY_IAM --profile diegocam
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
