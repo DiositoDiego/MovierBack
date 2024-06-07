@@ -9,7 +9,6 @@ rds_db = "movier"
 
 def lambda_handler(event, context):
     try:
-        # Asegurarse de que 'body' sea una cadena JSON y luego convertirla a un diccionario
         body = json.loads(event['body']) if isinstance(event['body'], str) else event['body']
         user = body.get('user_id')
         movie = body.get('movie_id')
