@@ -6,7 +6,7 @@ rds_user = "admin"
 rds_password = "admin123"
 rds_db = "movier"
 
-
+#
 def lambda_handler(event, context):
     try:
         movie = event['pathParameters'].get('id')
