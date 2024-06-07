@@ -18,10 +18,11 @@ capabilities = "CAPABILITY_IAM"
 confirm_changeset = true
 resolve_s3 = true
 s3_prefix = "Movier"
-region = "us-east-2"
+region = "us-east-1"
 disable_rollback = true
 image_repositories = []
 stack_name = "Movier"
+profile = "utez9c-diegoaf"
 
 [default.package.parameters]
 resolve_s3 = true
