@@ -4,7 +4,7 @@ on:
     branches:
       - main
       - develop
-      - featureMovies
+      - diego
   pull_request:
     types: [opened, synchronize, reopened]
 jobs:
@@ -28,11 +28,11 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v2
         with:
           fetch-depth: 0
       - name: Set up Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v3
         with:
           python-version: '3.12'
       - name: Install dependencies for create_comment
@@ -45,7 +45,7 @@ jobs:
           pip install -r requirements.txt
       - name: Install dependencies for delete_comment
         run: |
-          cd comment/delete_comment
+          cd comments/delete_comment
           pip install -r requirements.txt
       - name: Install dependencies for get_comments
         run: |
@@ -92,6 +92,4 @@ jobs:
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_DEFAULT_REGION: us-east-2
-
-
+          AWS_DEFAULT_REGION: us-east-1
