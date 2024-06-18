@@ -45,7 +45,7 @@ def lambda_handler(event, context):
             'body': json.dumps({'message': 'El comentario no puede estar vacío'})
         }
 
-    if len(comment) > 1000:
+    if len(comment) > 100:
         return {
             'statusCode': 400,
             'body': json.dumps({'message': 'El comentario no puede exceder los 1000 caracteres'})
