@@ -34,7 +34,7 @@ def lambda_handler(event, context):
 
     try:
         comment_id = int(comment_id)
-        if comment_id <= 0:
+        if not isinstance(comment_id, int) or comment_id <= 0:
             raise ValueError('El parámetro comment_id debe ser un entero positivo')
     except ValueError as e:
         return {
@@ -44,7 +44,7 @@ def lambda_handler(event, context):
 
     try:
         user_id = int(user_id)
-        if user_id <= 0:
+        if not isinstance(user_id, int) or user_id <= 0:
             raise ValueError('El parámetro user_id debe ser un entero positivo')
     except ValueError as e:
         return {
@@ -78,7 +78,7 @@ def lambda_handler(event, context):
         'body': json.dumps({'message': 'Comentario eliminado exitosamente'})
     }
 
-
+#funcion para obtener el comentario
 def get_comment_with_id(comment_id):
     connection = pymysql.connect(host=rds_host, user=rds_user, password=rds_password, db=rds_db)
     try:

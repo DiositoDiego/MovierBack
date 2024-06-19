@@ -9,7 +9,6 @@ rds_db = "movier"
 
 def lambda_handler(event, context):
     try:
-        # Asegurarse de que 'body' sea una cadena JSON y luego convertirla a un diccionario
         body = json.loads(event['body']) if isinstance(event['body'], str) else event['body']
         user = body.get('user_id')
         movie = body.get('movie_id')
@@ -46,7 +45,7 @@ def lambda_handler(event, context):
             'body': json.dumps({'message': 'El comentario no puede estar vacío'})
         }
 
-    if len(comment) > 1000:
+    if len(comment) > 100:
         return {
             'statusCode': 400,
             'body': json.dumps({'message': 'El comentario no puede exceder los 1000 caracteres'})
