@@ -34,9 +34,80 @@ class TestApp(unittest.TestCase):
         self.assertIn("message", body)
         self.assertEqual(body["message"], "Película insertada correctamente")
 
+
+
+
         mock_movie_exists.assert_called_once_with("Test1")
         mock_insert_into_movies.assert_called_once_with("Test1", "Test1", "Comedia", "dsad", 1)
 
+    @patch.dict("os.environ", {"REGION_NAME": "us-east-2", "DATA_BASE": "movier-test"})
+    def test_lambda_handler_missing_parameters(self):
+        mock_body = {"body": json.dumps({})}
+        result = app.lambda_handler(mock_body, None)
+        self.assertEqual(result['statusCode'], 400)
+        body = json.loads(result['body'])
+        self.assertIn("message", body)
+        self.assertEqual(body["message"], "Faltan parámetros")
 
-if __name__ == "__main__":
-    unittest.main()
+    @patch.dict("os.environ", {"REGION_NAME": "us-east-2", "DATA_BASE": "movier-test"})
+    @patch("movies.create_movie.app.movie_exists")
+    def test_lambda_handler_movie_already_exists(self, mock_movie_exists):
+        mock_movie_exists.return_value = True
+        result = app.lambda_handler(mock_body, None)
+        self.assertEqual(result['statusCode'], 400)
+        body = json.loads(result['body'])
+        self.assertIn("message", body)
+        self.assertEqual(body["message"], "La película con el mismo título ya existe")
+
+    @patch.dict("os.environ", {"REGION_NAME": "us-east-2", "DATA_BASE": "movier-test"})
+    def test_lambda_handler_parameter_length_exceeded(self):
+        mock_body = {
+            "body": json.dumps({
+                "title": "a" * 100056,
+                "description": "Test1",
+                "genre": "Comedia",
+                "image": "dsad",
+                "status": 1
+            })
+        }
+        result = app.lambda_handler(mock_body, None)
+        self.assertEqual(result['statusCode'], 400)
+        body = json.loads(result['body'])
+        self.assertIn("message", body)
+        self.assertEqual(body["message"], "Los parámetros deben ser cadenas de texto de máximo 255 caracteres")
+
+    @patch.dict("os.environ", {"REGION_NAME": "us-east-2", "DATA_BASE": "movier-test"})
+    def test_lambda_handler_invalid_status_type(self):
+        mock_body = {
+            "body": json.dumps({
+                "title": "Test1",
+                "description": "Test1",
+                "genre": "Comedia",
+                "image": "dsad",
+                "status": "invalid"
+            })
+        }
+        result = app.lambda_handler(mock_body, None)
+        self.assertEqual(result['statusCode'], 400)
+        body = json.loads(result['body'])
+        self.assertIn("message", body)
+        self.assertEqual(body["message"], "El parámetro status debe ser un número entero")
+
+    @patch.dict("os.environ", {"REGION_NAME": "us-east-2", "DATA_BASE": "movier-test"})
+    def test_lambda_handler_status_out_of_range(self):
+        mock_body = {
+            "body": json.dumps({
+                "title": "Test1",
+                "description": "Test1",
+                "genre": "Comedia",
+                "image": "dsad",
+                "status": 2
+            })
+        }
+        result = app.lambda_handler(mock_body, None)
+        self.assertEqual(result['statusCode'], 400)
+        body = json.loads(result['body'])
+        self.assertIn("message", body)
+        self.assertEqual(body["message"], "El parámetro status debe ser 0 o 1")
+
+
