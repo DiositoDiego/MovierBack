@@ -43,6 +43,21 @@ class TestApp(unittest.TestCase):
             self.assertEqual(body["message"], "Falta el parámetro comment_id")
 
         @patch.dict("os.environ", {"REGION_NAME": "us-east-2", "DATA_BASE": "movier-test"})
+        @patch("pymysql.connect")
+        def test_lambda_handler_err_conexion(self, mock_connect):
+            mock_connect.side_effect = Exception("Error al procesar la solicitud")
+
+            mock_body = {"body": json.dumps({"comment_id": 1, "user_id": 1})}
+            result = app.lambda_handler(mock_body, None)
+
+            self.assertEqual(result['statusCode'], 500)
+            body = json.loads(result['body'])
+            self.assertIn("message", body)
+            self.assertEqual(body["message"], "Error al procesar la solicitud")
+            self.assertIn("error", body)
+            self.assertEqual(body["error"], "Error al procesar la solicitud")
+
+        @patch.dict("os.environ", {"REGION_NAME": "us-east-2", "DATA_BASE": "movier-test"})
         @patch("comments.delete_comment.app.get_comment_with_id")
         @patch("comments.delete_comment.app.delete_comment")
         @patch("pymysql.connect")
