@@ -91,3 +91,20 @@ class TestApp(unittest.TestCase):
         mock_user_exists.assert_called_once_with(1)
         mock_movie_exists.assert_called_once_with(1)
         mock_insert_comment.assert_not_called()
+
+    @patch.dict("os.environ", {"REGION_NAME": "us-east-2", "DATA_BASE": "movier-test"})
+    @patch("pymysql.connect")
+    def test_lambda_handler_err_conexion(self, mock_connect):
+        mock_connect.side_effect = Exception("Expecting value: line 1 column 1")
+
+        body_mock = {
+            "body": "Expecting value: line 1 column 1 (char 0)"
+        }
+        result = app.lambda_handler(body_mock, None)
+
+        self.assertEqual(result['statusCode'], 500)
+        body = json.loads(result['body'])
+        self.assertIn("message", body)
+        self.assertEqual(body["message"], "Error al obtener los parámetros del cuerpo de la solicitud")
+        self.assertIn("error", body)
+        self.assertEqual(body["error"], "Expecting value: line 1 column 1 (char 0)")
