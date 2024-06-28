@@ -13,9 +13,10 @@ def lambda_handler(event, context):
         user = body.get('user_id')
         movie = body.get('movie_id')
         comment = body.get('comment')
+
     except Exception as e:
         return {
-            'statusCode': 400,
+            'statusCode': 500,
             'body': json.dumps(
                 {'message': 'Error al obtener los parámetros del cuerpo de la solicitud', 'error': str(e)})
         }
