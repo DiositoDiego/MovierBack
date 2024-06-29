@@ -38,3 +38,21 @@ class TestLambdaHandler(unittest.TestCase):
         mock_title_exists.assert_called_once_with("Test1", "1")
         mock_update_movie.assert_called_once_with("1", "Test1", "Test1", "Comedia", "dsad", None)
 
+    @patch.dict("os.environ", {"REGION_NAME": "us-east-2", "DATA_BASE": "movier-test"})
+    def test_lambda_handler_missing_id(self):
+        mock_body = {"body": json.dumps({})}
+        result = app.lambda_handler(mock_body, None)
+        self.assertEqual(result['statusCode'], 400)
+        body = json.loads(result['body'])
+        self.assertIn("message", body)
+        self.assertEqual(body["message"], "Error al obtener el ID de la película")
+
+    @patch.dict("os.environ", {"REGION_NAME": "us-east-2", "DATA_BASE": "movier-test"})
+    @patch("movies.update_movie.app.title_exists")
+    def test_lambda_handler_movie_already_exists(self, mock_movie_exists):
+        mock_movie_exists.return_value = True
+        result = app.lambda_handler(mock_body, None)
+        self.assertEqual(result['statusCode'], 400)
+        body = json.loads(result['body'])
+        self.assertIn("message", body)
+        self.assertEqual(body["message"], "La película con el mismo título ya existe")

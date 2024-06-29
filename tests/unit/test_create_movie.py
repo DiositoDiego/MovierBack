@@ -5,6 +5,8 @@ from pymysql import OperationalError
 
 import pymysql
 
+import pytest
+
 from movies.create_movie import (app)
 
 mock_body = {
