@@ -61,36 +61,6 @@ Resources:
                     - cognito-idp:AdminUserGlobalSignOut
                   Resource: 'arn:aws:cognito-idp:us-east-1:*:*'
 
-  MyCognitoUserPool:
-    Type: AWS::Cognito::UserPool
-    Properties:
-      UserPoolName: MyUserPool
-      UsernameAttributes:
-        - email
-      AutoVerifiedAttributes:
-        - email
-      Policies:
-        PasswordPolicy:
-          MinimumLength: 8
-          RequireUppercase: True
-          RequireLowercase: True
-          RequireNumbers: True
-          RequireSymbols: True
-
-  AdminGroup:
-    Type: AWS::Cognito::UserPoolGroup
-    Properties:
-      GroupName: Admins
-      UserPoolId: !Ref MyCognitoUserPool
-      Precedence: 1
-
-  UsersGroup:
-    Type: AWS::Cognito::UserPoolGroup
-    Properties:
-      GroupName: Users
-      UserPoolId: !Ref MyCognitoUserPool
-      Precedence: 2
-
   AuthApi:
     Type: AWS::Serverless::Api
     Properties:
@@ -120,7 +90,7 @@ Resources:
     Properties:
       CodeUri: login/login_users/
       Handler: app.lambda_handler
-      Runtime: python3.11
+      Runtime: python3.12
       Role: !GetAtt LambdaExecutionRole.Arn
       Architectures:
         - x86_64
@@ -137,7 +107,7 @@ Resources:
     Properties:
       CodeUri: login/set_password/
       Handler: app.lambda_handler
-      Runtime: python3.11
+      Runtime: python3.12
       Role: !GetAtt LambdaExecutionRole.Arn
       Architectures:
         - x86_64
