@@ -119,6 +119,23 @@ Resources:
             Path: /set_password
             Method: post
 
+  CreateUserFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: login/insert_user_pool/
+      Handler: app.lambda_handler
+      Runtime: python3.12
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Architectures:
+        - x86_64
+      Events:
+        SetPassword:
+          Type: Api
+          Properties:
+            RestApiId: !Ref AuthApi
+            Path: /create_user
+            Method: post
+
   CreateMovieFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -334,6 +351,10 @@ Outputs:
   SetPasswordApi:
     Description: "API Gateway endpoint URL for SetPasswordFunction"
     Value: !Sub "https://${AuthApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/set_password"
+
+  CreateUserApi:
+    Description: "API Gateway endpoint URL for CreateUserFunction"
+    Value: !Sub "https://${AuthApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/create_user"
 
   LambdaExecutionRole:
     Description: "Implicit IAM Role created for lambda functions"
