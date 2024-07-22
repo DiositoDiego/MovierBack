@@ -66,24 +66,44 @@ Resources:
     Properties:
       StageName: Prod
       Name: AuthApi
+      CorsConfiguration:
+        AllowHeaders: "'*'"
+        AllowMethods: "'*'"
+        AllowOrigins: "'*'"
+        MaxAge: "'600'"
 
   MovieApi:
     Type: AWS::Serverless::Api
     Properties:
       Name: MovieApi
       StageName: Prod
+      CorsConfiguration:
+        AllowHeaders: "'*'"
+        AllowMethods: "'*'"
+        AllowOrigins: "'*'"
+        MaxAge: "'600'"
 
   CommentApi:
     Type: AWS::Serverless::Api
     Properties:
       Name: CommentApi
       StageName: Prod
+      CorsConfiguration:
+        AllowHeaders: "'*'"
+        AllowMethods: "'*'"
+        AllowOrigins: "'*'"
+        MaxAge: "'600'"
 
   WatchedApi:
     Type: AWS::Serverless::Api
     Properties:
       Name: WatchedApi
       StageName: Prod
+      CorsConfiguration:
+        AllowHeaders: "'*'"
+        AllowMethods: "'*'"
+        AllowOrigins: "'*'"
+        MaxAge: "'600'"
 
   LoginFunction:
     Type: AWS::Serverless::Function
