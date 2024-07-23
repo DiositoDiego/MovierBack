@@ -70,10 +70,18 @@ def lambda_handler(event, context):
             'body': json.dumps({'message': 'Error al insertar el comentario en la base de datos', 'error': str(e)})
         }
 
-    return {
+        # Add CORS headers
+    response = {
         'statusCode': 200,
-        'body': json.dumps({'message': 'Comentario insertado correctamente'})
+        'body': json.dumps({'message': 'Comentario insertado correctamente'}),
+        'headers': {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'POST',
+            'Access-Control-Allow-Headers': 'Content-Type'
+        }
     }
+
+    return response
 
 
 def user_exists(user_id):

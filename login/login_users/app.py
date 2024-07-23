@@ -48,7 +48,12 @@ def lambda_handler(event, __):
                 'access_token': access_token,
                 'refresh_token': refresh_token,
                 'role': role
-            })
+            }),
+            'headers': {
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Methods': 'POST',
+                'Access-Control-Allow-Headers': 'Content-Type'
+            }
         }
 
     except ClientError as e:
