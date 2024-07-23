@@ -1,23 +1,31 @@
 import json
 import pymysql
 
-rds_host = "movier-test.czu8iscuyzfs.us-east-2.rds.amazonaws.com"
-rds_user = "admin"
-rds_password = "admin123"
+rds_host = "movier.cpiae0u0ckf8.us-east-1.rds.amazonaws.com"
+rds_user = "MovierAdmin"
+rds_password = "4dmin123"
 rds_db = "movier"
 
+
+headers_open = {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Headers': '*',
+        'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE,OPTIONS',
+    }
 def lambda_handler(event, context):
     try:
         user_id = event['pathParameters'].get('id')
     except Exception as e:
         return {
             'statusCode': 400,
+            'headers': headers_open,
             'body': json.dumps({'message': 'Error al obtener el ID de usuario de la solicitud', 'error': str(e)})
         }
 
     if user_id is None:
         return {
             'statusCode': 400,
+            'headers': headers_open,
             'body': json.dumps({'message': 'Falta el ID de usuario en la solicitud'})
         }
 
@@ -26,11 +34,13 @@ def lambda_handler(event, context):
     except Exception as e:
         return {
             'statusCode': 500,
+            'headers': headers_open,
             'body': json.dumps({'message': 'Error al obtener las películas vistas del usuario', 'error': str(e)})
         }
 
     return {
         'statusCode': 200,
+        'headers': headers_open,
         'body': json.dumps(movies_watched)
     }
 

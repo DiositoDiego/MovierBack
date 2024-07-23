@@ -1,10 +1,15 @@
 import json
 import pymysql
 
-rds_host = "movier-test.czu8iscuyzfs.us-east-2.rds.amazonaws.com"
-rds_user = "admin"
-rds_password = "admin123"
+rds_host = "movier.cpiae0u0ckf8.us-east-1.rds.amazonaws.com"
+rds_user = "MovierAdmin"
+rds_password = "4dmin123"
 rds_db = "movier"
+headers_open = {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Headers': '*',
+        'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE,OPTIONS',
+    }
 
 def lambda_handler(event, context):
     try:
@@ -12,12 +17,16 @@ def lambda_handler(event, context):
     except Exception as e:
         return {
             'statusCode': 400,
+            'headers': headers_open,
+
             'body': json.dumps({'message': 'Error al obtener el ID de la película', 'error': str(e)})
         }
 
     if movie_id is None:
         return {
             'statusCode': 400,
+            'headers': headers_open,
+
             'body': json.dumps({'message': 'Falta el ID de la película'})
         }
 
@@ -33,42 +42,53 @@ def lambda_handler(event, context):
         if not any([title, description, genre, image]):
             return {
                 'statusCode': 400,
+                'headers': headers_open,
+
                 'body': json.dumps({'message': 'Faltan campos a actualizar'})
             }
 
         if title and len(title) > 255:
             return {
                 'statusCode': 400,
+                'headers': headers_open,
+
                 'body': json.dumps({'message': 'El título no debe exceder los 255 caracteres'})
             }
 
         if description and len(description) > 255:
             return {
                 'statusCode': 400,
+                'headers': headers_open,
+
                 'body': json.dumps({'message': 'La descripción no debe exceder los 255 caracteres'})
             }
 
         if genre and len(genre) > 255:
             return {
                 'statusCode': 400,
+                'headers': headers_open,
+
                 'body': json.dumps({'message': 'El género no debe exceder los 255 caracteres'})
             }
 
         if image and len(image) > 255:
             return {
                 'statusCode': 400,
+                'headers': headers_open,
                 'body': json.dumps({'message': 'La URL de la imagen no debe exceder los 255 caracteres'})
             }
 
         if status is not None:
             return {
                 'statusCode': 400,
+                'headers': headers_open,
                 'body': json.dumps({'message': 'No se permite actualizar el campo "status"'})
             }
 
         if title and title_exists(title, movie_id):
             return {
                 'statusCode': 400,
+                'headers': headers_open,
                 'body': json.dumps({'message': 'La película con el mismo título ya existe'})
             }
 
@@ -76,11 +96,13 @@ def lambda_handler(event, context):
     except Exception as e:
         return {
             'statusCode': 500,
+            'headers': headers_open,
             'body': json.dumps({'message': 'Error al actualizar la película en la base de datos', 'error': str(e)})
         }
 
     return {
         'statusCode': 200,
+        'headers': headers_open,
         'body': json.dumps({'message': 'Película actualizada correctamente'})
     }
 

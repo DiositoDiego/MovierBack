@@ -1,11 +1,16 @@
 import json
 import pymysql
 
-rds_host = "movier-test.czu8iscuyzfs.us-east-2.rds.amazonaws.com"
-rds_user = "admin"
-rds_password = "admin123"
+rds_host = "movier.cpiae0u0ckf8.us-east-1.rds.amazonaws.com"
+rds_user = "MovierAdmin"
+rds_password = "4dmin123"
 rds_db = "movier"
 
+headers_open = {
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Methods": "OPTIONS, POST, GET",
+    "Access-Control-Allow-Headers": "Content-Type"
+}
 def lambda_handler(event, context):
     try:
         body = json.loads(event['body'])
@@ -17,30 +22,39 @@ def lambda_handler(event, context):
     except Exception as e:
         return {
             'statusCode': 400,
+            'headers': headers_open,
+
             'body': json.dumps({'message': 'Error al obtener los parámetros del cuerpo de la solicitud', 'error': str(e)})
         }
 
     if not all([title, description, genre, image]):
         return {
             'statusCode': 400,
+            'headers': headers_open,
+
             'body': json.dumps({'message': 'Faltan parámetros'})
         }
 
     if not all(isinstance(x, str) and len(x) <= 255 for x in [title, description, genre, image]):
         return {
             'statusCode': 400,
+            'headers': headers_open,
+
             'body': json.dumps({'message': 'Los parámetros deben ser cadenas de texto de máximo 255 caracteres'})
         }
 
     if not isinstance(status, int):
         return {
             'statusCode': 400,
+            'headers': headers_open,
+
             'body': json.dumps({'message': 'El parámetro status debe ser un número entero'})
         }
 
     if not (0 <= status <= 1):
         return {
             'statusCode': 400,
+            'headers': headers_open,
             'body': json.dumps({'message': 'El parámetro status debe ser 0 o 1'})
         }
 
@@ -48,17 +62,22 @@ def lambda_handler(event, context):
         if movie_exists(title):
             return {
                 'statusCode': 400,
+                'headers': headers_open,
                 'body': json.dumps({'message': 'La película con el mismo título ya existe'})
             }
         insert_into_movies(title, description, genre, image, status)
     except Exception as e:
         return {
             'statusCode': 500,
+            'headers': headers_open,
+
             'body': json.dumps({'message': 'Error al insertar en la base de datos', 'error': str(e)})
         }
 
     return {
         'statusCode': 200,
+        'headers': headers_open,
+
         'body': json.dumps({'message': 'Película insertada correctamente'})
     }
 

@@ -7,8 +7,12 @@ Description: >
 
 Globals:
   Function:
-    Timeout: 3
-    MemorySize: 128
+    Timeout: 10
+  Api:
+    Cors:
+      AllowOrigin: "'*'"
+      AllowHeaders: "'*'"
+      AllowMethods: "'GET,PUT,POST,DELETE,OPTIONS'"
 
 Resources:
   LambdaExecutionRole:
@@ -168,6 +172,23 @@ Resources:
             RestApiId: !Ref MovieApi
             Method: get
 
+  GetMovieByIdFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: movies/get_movie_by_id/
+      Handler: app.lambda_handler
+      Runtime: python3.12
+      Architectures:
+        - x86_64
+      Events:
+        GetMovie:
+          Type: Api
+          Properties:
+            Path: /getMovie/{id}
+            RestApiId: !Ref MovieApi
+            Method: get
+
+
   UpdateMovieFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -294,6 +315,13 @@ Outputs:
   GetMovieFunction:
     Description: "Get Movie Lambda Function ARN"
     Value: !GetAtt GetMovieFunction.Arn
+
+  GetMovieByIdApi:
+    Description: "API Gateway endpoint URL for Prod stage for get movie by id function"
+    Value: !Sub "https://${MovieApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/getMovie/{id}"
+  GetMovieByIdFunction:
+      Description: "Get Movie Lambda Function ARN"
+      Value: !GetAtt GetMovieByIdFunction.Arn
 
   UpdateMovieApi:
     Description: "API Gateway endpoint URL for Prod stage for update movie function"

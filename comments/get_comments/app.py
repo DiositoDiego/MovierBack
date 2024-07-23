@@ -1,10 +1,16 @@
 import json
 import pymysql
 
-rds_host = "movier-test.czu8iscuyzfs.us-east-2.rds.amazonaws.com"
-rds_user = "admin"
-rds_password = "admin123"
+rds_host = "movier.cpiae0u0ckf8.us-east-1.rds.amazonaws.com"
+rds_user = "MovierAdmin"
+rds_password = "4dmin123"
 rds_db = "movier"
+
+headers_open = {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Headers': '*',
+        'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE,OPTIONS',
+    }
 
 #3
 def lambda_handler(event, context):
@@ -13,12 +19,14 @@ def lambda_handler(event, context):
     except Exception as e:
         return {
             'statusCode': 400,
+            'headers': headers_open,
             'body': json.dumps(
                 {'message': 'Error al obtener los parámetros del cuerpo de la solicitud', 'error': str(e)})
         }
     if not movie:
         return {
             'statusCode': 400,
+            'headers': headers_open,
             'body': json.dumps({'message': 'Falta el parámetro movie_id'})
         }
 
@@ -29,6 +37,7 @@ def lambda_handler(event, context):
     except ValueError as e:
         return {
             'statusCode': 400,
+            'headers': headers_open,
             'body': json.dumps({'message': str(e)})
         }
 
@@ -36,11 +45,13 @@ def lambda_handler(event, context):
         if not movie_exists(movie):
             return {
                 'statusCode': 400,
+                'headers': headers_open,
                 'body': json.dumps({'message': 'La película no existe'})
             }
     except Exception as e:
         return {
             'statusCode': 500,
+            'headers': headers_open,
             'body': json.dumps({'message': 'Error al verificar la existencia de la película', 'error': str(e)})
         }
 
@@ -50,11 +61,13 @@ def lambda_handler(event, context):
     except Exception as e:
         return {
             'statusCode': 500,
+            'headers': headers_open,
             'body': json.dumps({'message': 'Error al obtener los comentarios de la base de datos', 'error': str(e)})
         }
 
     return {
         'statusCode': 200,
+        'headers': headers_open,
         'body': json.dumps({'Comentarios': comments})
     }
 

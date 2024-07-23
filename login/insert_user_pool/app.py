@@ -6,12 +6,16 @@ import boto3
 import pymysql
 from botocore.exceptions import ClientError
 
-rds_host = "movier-test.czu8iscuyzfs.us-east-2.rds.amazonaws.com"
-rds_user = "admin"
-rds_password = "admin123"
+rds_host = "movier.cpiae0u0ckf8.us-east-1.rds.amazonaws.com"
+rds_user = "MovierAdmin"
+rds_password = "4dmin123"
 rds_db = "movier"
 
-
+headers_open = {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Headers': '*',
+        'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE,OPTIONS',
+    }
 def lambda_handler(event, context):
     body_parameters = json.loads(event["body"])
     email = body_parameters.get('user_name')
@@ -22,7 +26,8 @@ def lambda_handler(event, context):
     if email is None or username is None:
         return {
             "statusCode": 400,
-            "body": json.dumps({"message": "missing input parameters"})
+            'headers': headers_open,
+            "body": json.dumps({"message": "Faltan parametros"})
         }
 
     try:
@@ -51,17 +56,20 @@ def lambda_handler(event, context):
 
         return {
             'statusCode': 200,
-            'body': json.dumps({"message": "User created successfully, verification email sent."})
+            'headers': headers_open,
+            'body': json.dumps({"message": "Usuario creado exitosamente, revise su correo para obtener su contraseña"})
         }
 
     except ClientError as e:
         return {
             'statusCode': 400,
+            'headers': headers_open,
             'body': json.dumps({"error_message": e.response['Error']['Message']})
         }
     except Exception as e:
         return {
             'statusCode': 500,
+            'headers': headers_open,
             'body': json.dumps({"error_message": str(e)})
         }
 

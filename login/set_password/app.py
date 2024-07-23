@@ -1,7 +1,11 @@
 import json
 import boto3
 from botocore.exceptions import ClientError
-
+headers_open = {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Headers': '*',
+        'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE,OPTIONS',
+    }
 
 def lambda_handler(event, __):
     client = boto3.client('cognito-idp', region_name='us-east-1')
@@ -38,21 +42,25 @@ def lambda_handler(event, __):
             )
             return {
                 'statusCode': 200,
-                'body': json.dumps({"message": "Password changed successfully."})
+                'headers': headers_open,
+                'body': json.dumps({"message": "Contraseña actualizada exitosamente"})
             }
         else:
             return {
                 'statusCode': 400,
-                'body': json.dumps({"error_message": "Unexpected challenge."})
+                'headers': headers_open,
+                'body': json.dumps({"error_message": "Error al actualizar la contraseña"})
             }
 
     except ClientError as e:
         return {
             'statusCode': 400,
+            'headers': headers_open,
             'body': json.dumps({"error_message": e.response['Error']['Message']})
         }
     except Exception as e:
         return {
             'statusCode': 500,
+            'headers': headers_open,
             'body': json.dumps({"error_message": str(e)})
         }
