@@ -1,10 +1,6 @@
 import json
-import pymysql
+from utils import get_connection
 
-rds_host = "movier.cpiae0u0ckf8.us-east-1.rds.amazonaws.com"
-rds_user = "MovierAdmin"
-rds_password = "4dmin123"
-rds_db = "movier"
 
 headers_open = {
     "Access-Control-Allow-Origin": "*",
@@ -47,7 +43,8 @@ def lambda_handler(event, context):
 
 
 def toggle_movie_status(movie_id):
-    connection = pymysql.connect(host=rds_host, user=rds_user, password=rds_password, db=rds_db)
+    connection = get_connection()
+
 
     try:
         with connection.cursor() as cursor:

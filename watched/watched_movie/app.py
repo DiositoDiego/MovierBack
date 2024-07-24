@@ -1,10 +1,6 @@
 import json
-import pymysql
+from utils import get_connection
 
-rds_host = "movier.cpiae0u0ckf8.us-east-1.rds.amazonaws.com"
-rds_user = "MovierAdmin"
-rds_password = "4dmin123"
-rds_db = "movier"
 
 
 headers_open = {
@@ -72,7 +68,7 @@ def lambda_handler(event, context):
 
 
 def is_valid_user(user_id):
-    connection = pymysql.connect(host=rds_host, user=rds_user, password=rds_password, db=rds_db)
+    connection = get_connection()
     try:
         with connection.cursor() as cursor:
             query = "SELECT id FROM Users WHERE id = %s"
@@ -86,7 +82,7 @@ def is_valid_user(user_id):
 
 
 def is_active_movie(movie_id):
-    connection = pymysql.connect(host=rds_host, user=rds_user, password=rds_password, db=rds_db)
+    connection = get_connection()
     try:
         with connection.cursor() as cursor:
             query = "SELECT id FROM Movies WHERE id = %s AND status = 1"
@@ -100,7 +96,7 @@ def is_active_movie(movie_id):
 
 
 def mark_movie_as_watched(user_id, movie_id):
-    connection = pymysql.connect(host=rds_host, user=rds_user, password=rds_password, db=rds_db)
+    connection = get_connection()
 
     try:
         with connection.cursor() as cursor:

@@ -1,10 +1,7 @@
 import json
 import pymysql
+from utils import get_connection
 
-rds_host = "movier.cpiae0u0ckf8.us-east-1.rds.amazonaws.com"
-rds_user = "MovierAdmin"
-rds_password = "4dmin123"
-rds_db = "movier"
 
 headers_open = {
         'Access-Control-Allow-Origin': '*',
@@ -94,7 +91,7 @@ def lambda_handler(event, context):
 
 #funcion para obtener el comentario
 def get_comment_with_id(comment_id):
-    connection = pymysql.connect(host=rds_host, user=rds_user, password=rds_password, db=rds_db)
+    connection = get_connection()
     try:
         with connection.cursor(pymysql.cursors.DictCursor) as cursor:
             query = "SELECT * FROM Comments WHERE id = %s"
@@ -107,7 +104,7 @@ def get_comment_with_id(comment_id):
 
 
 def delete_comment(comment_id):
-    connection = pymysql.connect(host=rds_host, user=rds_user, password=rds_password, db=rds_db)
+    connection = get_connection()
     try:
         with connection.cursor() as cursor:
             query = "DELETE FROM Comments WHERE id = %s"

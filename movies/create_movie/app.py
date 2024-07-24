@@ -1,16 +1,13 @@
 import json
-import pymysql
-
-rds_host = "movier.cpiae0u0ckf8.us-east-1.rds.amazonaws.com"
-rds_user = "MovierAdmin"
-rds_password = "4dmin123"
-rds_db = "movier"
+from utils import get_connection
 
 headers_open = {
     "Access-Control-Allow-Origin": "*",
     "Access-Control-Allow-Methods": "OPTIONS, POST, GET",
     "Access-Control-Allow-Headers": "Content-Type"
 }
+
+
 def lambda_handler(event, context):
     try:
         body = json.loads(event['body'])
@@ -24,7 +21,8 @@ def lambda_handler(event, context):
             'statusCode': 400,
             'headers': headers_open,
 
-            'body': json.dumps({'message': 'Error al obtener los parámetros del cuerpo de la solicitud', 'error': str(e)})
+            'body': json.dumps(
+                {'message': 'Error al obtener los parámetros del cuerpo de la solicitud', 'error': str(e)})
         }
 
     if not all([title, description, genre, image]):
@@ -81,8 +79,9 @@ def lambda_handler(event, context):
         'body': json.dumps({'message': 'Película insertada correctamente'})
     }
 
+
 def movie_exists(title):
-    connection = pymysql.connect(host=rds_host, user=rds_user, password=rds_password, db=rds_db)
+    connection = get_connection()
     try:
         with connection.cursor() as cursor:
             check_query = "SELECT COUNT(*) FROM Movies WHERE LOWER(title) = LOWER(%s)"
@@ -92,8 +91,9 @@ def movie_exists(title):
     finally:
         connection.close()
 
+
 def insert_into_movies(title, description, genre, image, status):
-    connection = pymysql.connect(host=rds_host, user=rds_user, password=rds_password, db=rds_db)
+    connection = get_connection()
     try:
         with connection.cursor() as cursor:
             insert_query = """

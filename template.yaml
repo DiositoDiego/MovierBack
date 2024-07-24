@@ -140,6 +140,8 @@ Resources:
             Path: /create_user
             Method: post
 
+
+
   CreateMovieFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -375,14 +377,23 @@ Outputs:
   LoginApi:
     Description: "API Gateway endpoint URL for LoginFunction"
     Value: !Sub "https://${AuthApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/login"
+  LoginFunction:
+    Description: "Login Lambda Function ARN"
+    Value: !GetAtt LoginFunction.Arn
 
   SetPasswordApi:
     Description: "API Gateway endpoint URL for SetPasswordFunction"
     Value: !Sub "https://${AuthApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/set_password"
+  SetPasswordFunction:
+    Description: "Set Password Lambda Function ARN"
+    Value: !GetAtt SetPasswordFunction.Arn
 
   CreateUserApi:
     Description: "API Gateway endpoint URL for CreateUserFunction"
     Value: !Sub "https://${AuthApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/create_user"
+  CreateUserFunction:
+    Description: "Create User Lambda Function ARN"
+    Value: !GetAtt CreateUserFunction.Arn
 
   LambdaExecutionRole:
     Description: "Implicit IAM Role created for lambda functions"

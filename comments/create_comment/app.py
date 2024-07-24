@@ -1,10 +1,6 @@
 import json
-import pymysql
+from utils import get_connection
 
-rds_host = "movier.cpiae0u0ckf8.us-east-1.rds.amazonaws.com"
-rds_user = "MovierAdmin"
-rds_password = "4dmin123"
-rds_db = "movier"
 
 headers_open = {
         'Access-Control-Allow-Origin': '*',
@@ -97,7 +93,7 @@ def lambda_handler(event, context):
 
 
 def user_exists(user_id):
-    connection = pymysql.connect(host=rds_host, user=rds_user, password=rds_password, db=rds_db)
+    connection = get_connection()
     try:
         with connection.cursor() as cursor:
             check_query = "SELECT COUNT(*) FROM Users WHERE id = %s"
@@ -109,7 +105,7 @@ def user_exists(user_id):
 
 
 def movie_exists(movie_id):
-    connection = pymysql.connect(host=rds_host, user=rds_user, password=rds_password, db=rds_db)
+    connection = get_connection()
     try:
         with connection.cursor() as cursor:
             check_query = "SELECT COUNT(*) FROM Movies WHERE id = %s"
@@ -121,7 +117,7 @@ def movie_exists(movie_id):
 
 
 def insert_into_comments(user, movie, comment):
-    connection = pymysql.connect(host=rds_host, user=rds_user, password=rds_password, db=rds_db)
+    connection = get_connection()
     try:
         with connection.cursor() as cursor:
             insert_query = """
