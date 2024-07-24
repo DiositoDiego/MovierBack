@@ -1,8 +1,6 @@
 from unittest.mock import patch, Mock
 import unittest
 import json
-import pymysql
-
 from movies.create_movie import (app)
 
 mock_body = {
@@ -109,5 +107,19 @@ class TestApp(unittest.TestCase):
         body = json.loads(result['body'])
         self.assertIn("message", body)
         self.assertEqual(body["message"], "El parámetro status debe ser 0 o 1")
+
+    @patch.dict("os.environ", {"REGION_NAME": "us-east-2", "DATA_BASE": "movier-test"})
+    @patch("movies.create_movie.app.insert_into_movies")
+    @patch("pymysql.connect")
+    def test_lamda_handler_500(self, mock_connect, __ ):
+        mock_connect.side_effect = Exception("Error al insertar en la base de datos")
+        result = app.lambda_handler(mock_body, None)
+        self.assertEqual(result['statusCode'], 500)
+        body = json.loads(result['body'])
+        self.assertIn("message", body)
+        self.assertEqual(body["message"], "Error al insertar en la base de datos")
+
+
+
 
 
