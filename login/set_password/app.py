@@ -1,11 +1,19 @@
 import json
 import boto3
+import pymysql
 from botocore.exceptions import ClientError
+
+rds_host = "movier.cpiae0u0ckf8.us-east-1.rds.amazonaws.com"
+rds_user = "MovierAdmin"
+rds_password = "4dmin123"
+rds_db = "movier"
+
 headers_open = {
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Headers': '*',
-        'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE,OPTIONS',
-    }
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Headers': '*',
+    'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE,OPTIONS',
+}
+
 
 def lambda_handler(event, __):
     client = boto3.client('cognito-idp', region_name='us-east-1')
@@ -40,6 +48,10 @@ def lambda_handler(event, __):
                     'email_verified': 'true'
                 }
             )
+
+            # Llama al método insert_db para actualizar la contraseña en la base de datos
+            insert_db(username, new_password)
+
             return {
                 'statusCode': 200,
                 'headers': headers_open,
@@ -64,3 +76,16 @@ def lambda_handler(event, __):
             'headers': headers_open,
             'body': json.dumps({"error_message": str(e)})
         }
+
+
+def insert_db(username, password):
+    connection = pymysql.connect(host=rds_host, user=rds_user, password=rds_password, db=rds_db)
+    try:
+        with connection.cursor() as cursor:
+            update_query = """
+                UPDATE Users SET password = %s WHERE username = %s
+            """
+            cursor.execute(update_query, (password, username))
+            connection.commit()
+    finally:
+        connection.close()
