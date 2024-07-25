@@ -1,29 +1,33 @@
 import json
 import pymysql
+from utils import get_connection
 
-rds_host = "movier-test.czu8iscuyzfs.us-east-2.rds.amazonaws.com"
-rds_user = "admin"
-rds_password = "admin123"
-rds_db = "movier"
 
-#sd
+headers_open = {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Headers': '*',
+        'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE,OPTIONS',
+    }
 def lambda_handler(event, context):
     try:
         movies = get_movies_with_status(1)
     except Exception as e:
         return {
             'statusCode': 500,
+            'headers': headers_open,
+
             'body': json.dumps({'message': 'Error al obtener las películas de la base de datos', 'error': str(e)})
         }
 
     return {
         'statusCode': 200,
+        'headers': headers_open,
         'body': json.dumps({'Peliculas': movies})
     }
 
 
 def get_movies_with_status(status):
-    connection = pymysql.connect(host=rds_host, user=rds_user, password=rds_password, db=rds_db)
+    connection = get_connection()
     movies = []
 
     try:

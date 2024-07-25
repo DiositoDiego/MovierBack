@@ -1,11 +1,12 @@
 import json
-import pymysql
+from utils import get_connection
 
-rds_host = "movier-test.czu8iscuyzfs.us-east-2.rds.amazonaws.com"
-rds_user = "admin"
-rds_password = "admin123"
-rds_db = "movier"
 
+headers_open = {
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Methods": "OPTIONS, POST, GET",
+    "Access-Control-Allow-Headers": "Content-Type"
+}
 
 def lambda_handler(event, context):
     try:
@@ -13,12 +14,14 @@ def lambda_handler(event, context):
     except Exception as e:
         return {
             'statusCode': 400,
+            'headers': headers_open,
             'body': json.dumps({'message': 'Error al obtener el ID de la película', 'error': str(e)})
         }
 
     if movie_id is None:
         return {
             'statusCode': 400,
+            'headers': headers_open,
             'body': json.dumps({'message': 'Falta el ID de la película'})
         }
 
@@ -27,18 +30,21 @@ def lambda_handler(event, context):
     except Exception as e:
         return {
             'statusCode': 500,
+            'headers': headers_open,
             'body': json.dumps(
                 {'message': 'Error al actualizar el estado de la película en la base de datos', 'error': str(e)})
         }
 
     return {
         'statusCode': 200,
+        'headers': headers_open,
         'body': json.dumps({'message': message})
     }
 
 
 def toggle_movie_status(movie_id):
-    connection = pymysql.connect(host=rds_host, user=rds_user, password=rds_password, db=rds_db)
+    connection = get_connection()
+
 
     try:
         with connection.cursor() as cursor:

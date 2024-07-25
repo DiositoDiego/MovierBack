@@ -1,11 +1,13 @@
 import json
-import pymysql
+from utils import get_connection
 
-rds_host = "movier-test.czu8iscuyzfs.us-east-2.rds.amazonaws.com"
-rds_user = "admin"
-rds_password = "admin123"
-rds_db = "movier"
 
+
+headers_open = {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Headers': '*',
+        'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE,OPTIONS',
+    }
 
 def lambda_handler(event, context):
     try:
@@ -16,24 +18,28 @@ def lambda_handler(event, context):
         if not isinstance(user_id, int) or not isinstance(movie_id, int):
             return {
                 'statusCode': 400,
+                'headers': headers_open,
                 'body': json.dumps({'message': 'Los IDs de usuario y película deben ser enteros'})
             }
 
         if not user_id or not movie_id:
             return {
                 'statusCode': 400,
+                'headers': headers_open,
                 'body': json.dumps({'message': 'Faltan user_id o movie_id en el cuerpo de la solicitud'})
             }
 
         if not is_valid_user(user_id):
             return {
                 'statusCode': 400,
+                'headers': headers_open,
                 'body': json.dumps({'message': 'El usuario no existe o no es válido'})
             }
 
         if not is_active_movie(movie_id):
             return {
                 'statusCode': 400,
+                'headers': headers_open,
                 'body': json.dumps({'message': 'La película no existe o no está activa'})
             }
 
@@ -42,24 +48,27 @@ def lambda_handler(event, context):
         if was_watched:
             return {
                 'statusCode': 200,
+                'headers': headers_open,
                 'body': json.dumps({'message': 'Película desmarcada como vista'})
             }
         else:
             return {
                 'statusCode': 200,
+                'headers': headers_open,
                 'body': json.dumps({'message': 'Película marcada como vista con éxito'})
             }
 
     except Exception as e:
         return {
             'statusCode': 500,
+            'headers': headers_open,
             'body': json.dumps(
                 {'message': 'Error al marcar la película como vista en la base de datos', 'error': str(e)})
         }
 
 
 def is_valid_user(user_id):
-    connection = pymysql.connect(host=rds_host, user=rds_user, password=rds_password, db=rds_db)
+    connection = get_connection()
     try:
         with connection.cursor() as cursor:
             query = "SELECT id FROM Users WHERE id = %s"
@@ -73,7 +82,7 @@ def is_valid_user(user_id):
 
 
 def is_active_movie(movie_id):
-    connection = pymysql.connect(host=rds_host, user=rds_user, password=rds_password, db=rds_db)
+    connection = get_connection()
     try:
         with connection.cursor() as cursor:
             query = "SELECT id FROM Movies WHERE id = %s AND status = 1"
@@ -87,7 +96,7 @@ def is_active_movie(movie_id):
 
 
 def mark_movie_as_watched(user_id, movie_id):
-    connection = pymysql.connect(host=rds_host, user=rds_user, password=rds_password, db=rds_db)
+    connection = get_connection()
 
     try:
         with connection.cursor() as cursor:

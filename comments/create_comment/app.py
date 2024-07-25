@@ -1,10 +1,12 @@
 import json
-import pymysql
+from utils import get_connection
 
-rds_host = "movier-test.czu8iscuyzfs.us-east-2.rds.amazonaws.com"
-rds_user = "admin"
-rds_password = "admin123"
-rds_db = "movier"
+
+headers_open = {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Headers': '*',
+        'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE,OPTIONS',
+    }
 
 
 def lambda_handler(event, context):
@@ -13,9 +15,11 @@ def lambda_handler(event, context):
         user = body.get('user_id')
         movie = body.get('movie_id')
         comment = body.get('comment')
+
     except Exception as e:
         return {
-            'statusCode': 400,
+            'statusCode': 500,
+            'headers': headers_open,
             'body': json.dumps(
                 {'message': 'Error al obtener los parámetros del cuerpo de la solicitud', 'error': str(e)})
         }
@@ -23,6 +27,7 @@ def lambda_handler(event, context):
     if user is None or movie is None or comment is None:
         return {
             'statusCode': 400,
+            'headers': headers_open,
             'body': json.dumps({'message': 'Faltan parámetros'})
         }
 
@@ -30,24 +35,28 @@ def lambda_handler(event, context):
     if not isinstance(user, int) or user <= 0:
         return {
             'statusCode': 400,
+            'headers': headers_open,
             'body': json.dumps({'message': 'El ID del usuario debe ser un entero positivo'})
         }
 
     if not isinstance(movie, int) or movie <= 0:
         return {
             'statusCode': 400,
+            'headers': headers_open,
             'body': json.dumps({'message': 'El ID de la película debe ser un entero positivo'})
         }
 
     if not isinstance(comment, str) or not comment.strip():
         return {
             'statusCode': 400,
+            'headers': headers_open,
             'body': json.dumps({'message': 'El comentario no puede estar vacío'})
         }
 
     if len(comment) > 100:
         return {
             'statusCode': 400,
+            'headers': headers_open,
             'body': json.dumps({'message': 'El comentario no puede exceder los 1000 caracteres'})
         }
 
@@ -55,28 +64,36 @@ def lambda_handler(event, context):
         if not user_exists(user):
             return {
                 'statusCode': 400,
+                'headers': headers_open,
                 'body': json.dumps({'message': 'El usuario no existe'})
             }
         if not movie_exists(movie):
             return {
                 'statusCode': 400,
+                'headers': headers_open,
                 'body': json.dumps({'message': 'La película no existe'})
             }
         insert_into_comments(user, movie, comment)
     except Exception as e:
         return {
             'statusCode': 500,
+            'headers': headers_open,
             'body': json.dumps({'message': 'Error al insertar el comentario en la base de datos', 'error': str(e)})
         }
 
-    return {
+        # Add CORS headers
+    response = {
         'statusCode': 200,
-        'body': json.dumps({'message': 'Comentario insertado correctamente'})
+        'headers': headers_open,
+        'body': json.dumps({'message': 'Comentario insertado correctamente'}),
+
     }
+
+    return response
 
 
 def user_exists(user_id):
-    connection = pymysql.connect(host=rds_host, user=rds_user, password=rds_password, db=rds_db)
+    connection = get_connection()
     try:
         with connection.cursor() as cursor:
             check_query = "SELECT COUNT(*) FROM Users WHERE id = %s"
@@ -88,7 +105,7 @@ def user_exists(user_id):
 
 
 def movie_exists(movie_id):
-    connection = pymysql.connect(host=rds_host, user=rds_user, password=rds_password, db=rds_db)
+    connection = get_connection()
     try:
         with connection.cursor() as cursor:
             check_query = "SELECT COUNT(*) FROM Movies WHERE id = %s"
@@ -100,7 +117,7 @@ def movie_exists(movie_id):
 
 
 def insert_into_comments(user, movie, comment):
-    connection = pymysql.connect(host=rds_host, user=rds_user, password=rds_password, db=rds_db)
+    connection = get_connection()
     try:
         with connection.cursor() as cursor:
             insert_query = """
