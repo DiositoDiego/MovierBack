@@ -1,10 +1,6 @@
 from unittest.mock import patch, Mock
 import unittest
 import json
-from pymysql import OperationalError
-
-import pymysql
-
 from movies.create_movie import (app)
 
 mock_body = {

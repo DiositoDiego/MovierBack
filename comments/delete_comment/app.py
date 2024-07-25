@@ -1,11 +1,13 @@
 import json
 import pymysql
+from utils import get_connection
 
-rds_host = "movier-test.czu8iscuyzfs.us-east-2.rds.amazonaws.com"
-rds_user = "admin"
-rds_password = "admin123"
-rds_db = "movier"
 
+headers_open = {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Headers': '*',
+        'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE,OPTIONS',
+    }
 
 def lambda_handler(event, context):
     try:
@@ -16,6 +18,7 @@ def lambda_handler(event, context):
     except Exception as e:
         return {
             'statusCode': 400,
+            'headers': headers_open,
             'body': json.dumps(
                 {'message': 'Error al obtener los parámetros del cuerpo de la solicitud', 'error': str(e)})
         }
@@ -23,12 +26,14 @@ def lambda_handler(event, context):
     if not comment_id:
         return {
             'statusCode': 400,
+            'headers': headers_open,
             'body': json.dumps({'message': 'Falta el parámetro comment_id'})
         }
 
     if not user_id:
         return {
             'statusCode': 400,
+            'headers': headers_open,
             'body': json.dumps({'message': 'Falta el parámetro user_id'})
         }
 
@@ -39,6 +44,7 @@ def lambda_handler(event, context):
     except ValueError as e:
         return {
             'statusCode': 400,
+            'headers': headers_open,
             'body': json.dumps({'message': str(e)})
         }
 
@@ -49,6 +55,7 @@ def lambda_handler(event, context):
     except ValueError as e:
         return {
             'statusCode': 400,
+            'headers': headers_open,
             'body': json.dumps({'message': str(e)})
         }
 
@@ -57,12 +64,14 @@ def lambda_handler(event, context):
         if not comment:
             return {
                 'statusCode': 404,
+                'headers': headers_open,
                 'body': json.dumps({'message': 'Comentario no encontrado'})
             }
 
         if comment['user_id'] != user_id:
             return {
                 'statusCode': 403,
+                'headers': headers_open,
                 'body': json.dumps({'message': 'Usuario no autorizado para eliminar este comentario'})
             }
 
@@ -70,17 +79,19 @@ def lambda_handler(event, context):
     except Exception as e:
         return {
             'statusCode': 500,
+            'headers': headers_open,
             'body': json.dumps({'message': 'Error al procesar la solicitud', 'error': str(e)})
         }
 
     return {
         'statusCode': 200,
+        'headers': headers_open,
         'body': json.dumps({'message': 'Comentario eliminado exitosamente'})
     }
 
 #funcion para obtener el comentario
 def get_comment_with_id(comment_id):
-    connection = pymysql.connect(host=rds_host, user=rds_user, password=rds_password, db=rds_db)
+    connection = get_connection()
     try:
         with connection.cursor(pymysql.cursors.DictCursor) as cursor:
             query = "SELECT * FROM Comments WHERE id = %s"
@@ -93,7 +104,7 @@ def get_comment_with_id(comment_id):
 
 
 def delete_comment(comment_id):
-    connection = pymysql.connect(host=rds_host, user=rds_user, password=rds_password, db=rds_db)
+    connection = get_connection()
     try:
         with connection.cursor() as cursor:
             query = "DELETE FROM Comments WHERE id = %s"
