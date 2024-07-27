@@ -2,10 +2,11 @@ import json
 from utils import get_connection
 
 headers_open = {
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Headers': '*',
-        'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE,OPTIONS',
-    }
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Headers': '*',
+    'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE,OPTIONS',
+}
+
 
 #3
 def lambda_handler(event, context):
@@ -66,6 +67,7 @@ def lambda_handler(event, context):
         'body': json.dumps({'Comentarios': comments})
     }
 
+
 def movie_exists(movie_id):
     connection = get_connection()
     try:
@@ -85,9 +87,10 @@ def get_comments_with_movie_id(movie_id):
     try:
         with connection.cursor() as cursor:
             query = """
-                SELECT *
-                FROM Comments
-                WHERE movie_id = %s
+                SELECT c.id, c.user_id, c.movie_id, c.comment, c.date, u.username
+                FROM Comments c
+                INNER JOIN Users u ON c.user_id = u.id
+                WHERE c.movie_id = %s
                 """
             cursor.execute(query, (movie_id,))
             result = cursor.fetchall()
@@ -97,11 +100,11 @@ def get_comments_with_movie_id(movie_id):
                     'user_id': row[1],
                     'movie_id': row[2],
                     'comment': row[3],
-                    'date': row[4].strftime('%Y-%m-%d %H:%M:%S')
+                    'date': row[4].strftime('%Y-%m-%d %H:%M:%S'),
+                    'username': row[5]
                 }
                 comments.append(comment)
     finally:
         connection.close()
-
 
     return comments
