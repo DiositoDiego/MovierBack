@@ -1,12 +1,20 @@
 import json
 import boto3
+import pymysql
 from botocore.exceptions import ClientError
 
+rds_host = "movier.cpiae0u0ckf8.us-east-1.rds.amazonaws.com"
+rds_user = "MovierAdmin"
+rds_password = "4dmin123"
+rds_db = "movier"
+
 headers_open = {
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Headers': '*',
-        'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE,OPTIONS',
-    }
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Headers': '*',
+    'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE,OPTIONS',
+}
+
+
 def lambda_handler(event, __):
     client = boto3.client('cognito-idp', region_name='us-east-1')
     client_id = "7ss3ku3uarreptpl5eg5khksoj"
@@ -45,6 +53,7 @@ def lambda_handler(event, __):
         role = None
         if user_groups['Groups']:
             role = user_groups['Groups'][0]['GroupName']  # Assuming a user belongs to a single group
+        IdUser = select_id(username)
 
         return {
             'statusCode': 200,
@@ -53,9 +62,9 @@ def lambda_handler(event, __):
                 'id_token': id_token,
                 'access_token': access_token,
                 'refresh_token': refresh_token,
-                'role': role
+                'role': role,
+                'id': IdUser
             }),
-
         }
 
     except ClientError as e:
@@ -72,3 +81,18 @@ def lambda_handler(event, __):
             'headers': headers_open,
             'body': json.dumps({"error_message": str(e)})
         }
+
+
+def select_id(username):
+    connection = pymysql.connect(host=rds_host, user=rds_user, password=rds_password, db=rds_db)
+    try:
+        with connection.cursor() as cursor:
+            select_query = "SELECT id FROM Users WHERE username = %s"
+            cursor.execute(select_query, (username,))
+            result = cursor.fetchone()
+            if result:
+                return result[0]
+            else:
+                return None
+    finally:
+        connection.close()
