@@ -1,4 +1,4 @@
-AWSTemplateFormatVersion: '2010-09-09'
+AWSTemplateFormatVersion: "2010-09-09"
 Transform: AWS::Serverless-2016-10-31
 Description: >
   MovierBack
@@ -12,14 +12,14 @@ Globals:
     Cors:
       AllowOrigin: "'*'"
       AllowHeaders: "'*'"
-      AllowMethods: "'GET,PUT,POST,DELETE,OPTIONS'"
+      AllowMethods: "'GET,PUT,POST,PATCH,DELETE,OPTIONS'"
 
 Resources:
   LambdaExecutionRole:
     Type: AWS::IAM::Role
     Properties:
       AssumeRolePolicyDocument:
-        Version: '2012-10-17'
+        Version: "2012-10-17"
         Statement:
           - Effect: Allow
             Principal:
@@ -28,42 +28,42 @@ Resources:
       Policies:
         - PolicyName: LambdaBasicExecution
           PolicyDocument:
-            Version: '2012-10-17'
+            Version: "2012-10-17"
             Statement:
               - Effect: Allow
                 Action:
                   - logs:CreateLogGroup
                   - logs:CreateLogStream
                   - logs:PutLogEvents
-                Resource: '*'
+                Resource: "*"
         - PolicyName: CognitoAdminInitiateAuth
           PolicyDocument:
-              Version: '2012-10-17'
-              Statement:
-                - Effect: Allow
-                  Action:
-                    - cognito-idp:AdminInitiateAuth
-                    - cognito-idp:AdminRespondToAuthChallenge
-                    - cognito-idp:AdminSetUserPassword
-                    - cognito-idp:AdminCreateUser
-                    - cognito-idp:AdminDeleteUser
-                    - cognito-idp:AdminUpdateUserAttributes
-                    - cognito-idp:AdminListGroupsForUser
-                    - cognito-idp:AdminAddUserToGroup
-                    - cognito-idp:AdminRemoveUserFromGroup
-                    - cognito-idp:AdminGetUser
-                    - cognito-idp:AdminGetUserAttributeVerificationCode
-                    - cognito-idp:AdminConfirmSignUp
-                    - cognito-idp:AdminForgetDevice
-                    - cognito-idp:AdminConfirmDevice
-                    - cognito-idp:AdminUpdateDeviceStatus
-                    - cognito-idp:AdminEnableUser
-                    - cognito-idp:AdminDisableUser
-                    - cognito-idp:AdminResetUserPassword
-                    - cognito-idp:AdminSetUserSettings
-                    - cognito-idp:AdminUpdateAuthEventFeedback
-                    - cognito-idp:AdminUserGlobalSignOut
-                  Resource: 'arn:aws:cognito-idp:us-east-1:*:*'
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - cognito-idp:AdminInitiateAuth
+                  - cognito-idp:AdminRespondToAuthChallenge
+                  - cognito-idp:AdminSetUserPassword
+                  - cognito-idp:AdminCreateUser
+                  - cognito-idp:AdminDeleteUser
+                  - cognito-idp:AdminUpdateUserAttributes
+                  - cognito-idp:AdminListGroupsForUser
+                  - cognito-idp:AdminAddUserToGroup
+                  - cognito-idp:AdminRemoveUserFromGroup
+                  - cognito-idp:AdminGetUser
+                  - cognito-idp:AdminGetUserAttributeVerificationCode
+                  - cognito-idp:AdminConfirmSignUp
+                  - cognito-idp:AdminForgetDevice
+                  - cognito-idp:AdminConfirmDevice
+                  - cognito-idp:AdminUpdateDeviceStatus
+                  - cognito-idp:AdminEnableUser
+                  - cognito-idp:AdminDisableUser
+                  - cognito-idp:AdminResetUserPassword
+                  - cognito-idp:AdminSetUserSettings
+                  - cognito-idp:AdminUpdateAuthEventFeedback
+                  - cognito-idp:AdminUserGlobalSignOut
+                Resource: "arn:aws:cognito-idp:us-east-1:*:*"
 
   AuthApi:
     Type: AWS::Serverless::Api
@@ -140,8 +140,6 @@ Resources:
             Path: /create_user
             Method: post
 
-
-
   CreateMovieFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -174,6 +172,22 @@ Resources:
             RestApiId: !Ref MovieApi
             Method: get
 
+  GetAllMovieFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: movies/get_all_movies/
+      Handler: app.lambda_handler
+      Runtime: python3.12
+      Architectures:
+        - x86_64
+      Events:
+        GetMovie:
+          Type: Api
+          Properties:
+            Path: /getAllMovies
+            RestApiId: !Ref MovieApi
+            Method: get
+
   GetMovieByIdFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -189,7 +203,6 @@ Resources:
             Path: /getMovie/{id}
             RestApiId: !Ref MovieApi
             Method: get
-
 
   UpdateMovieFunction:
     Type: AWS::Serverless::Function
@@ -318,12 +331,19 @@ Outputs:
     Description: "Get Movie Lambda Function ARN"
     Value: !GetAtt GetMovieFunction.Arn
 
+  GetAllMovieApi:
+    Description: "API Gateway endpoint URL for Prod stage for get movies function"
+    Value: !Sub "https://${MovieApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/getAllMovies"
+  GetAllMovieFunction:
+    Description: "Get Movie Lambda Function ARN"
+    Value: !GetAtt GetAllMovieFunction.Arn
+
   GetMovieByIdApi:
     Description: "API Gateway endpoint URL for Prod stage for get movie by id function"
     Value: !Sub "https://${MovieApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/getMovie/{id}"
   GetMovieByIdFunction:
-      Description: "Get Movie Lambda Function ARN"
-      Value: !GetAtt GetMovieByIdFunction.Arn
+    Description: "Get Movie Lambda Function ARN"
+    Value: !GetAtt GetMovieByIdFunction.Arn
 
   UpdateMovieApi:
     Description: "API Gateway endpoint URL for Prod stage for update movie function"
