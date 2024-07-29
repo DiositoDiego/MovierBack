@@ -4,7 +4,7 @@ from utils import get_connection
 
 headers_open = {
     "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Methods": "OPTIONS, POST, GET",
+    "Access-Control-Allow-Methods": "OPTIONS, POST, GET, PATCH, PUT",
     "Access-Control-Allow-Headers": "Content-Type"
 }
 

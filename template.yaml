@@ -12,7 +12,7 @@ Globals:
     Cors:
       AllowOrigin: "'*'"
       AllowHeaders: "'*'"
-      AllowMethods: "'GET,PUT,POST,DELETE,OPTIONS'"
+      AllowMethods: "'GET,PUT,POST,PATCH,DELETE,OPTIONS'"
 
 Resources:
   LambdaExecutionRole:
