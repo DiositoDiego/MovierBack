@@ -200,7 +200,7 @@ Resources:
         GetMovie:
           Type: Api
           Properties:
-            Path: /getMovie/{id}
+            Path: /getMovie/{id}/{user_id}
             RestApiId: !Ref MovieApi
             Method: get
 
@@ -340,7 +340,7 @@ Outputs:
 
   GetMovieByIdApi:
     Description: "API Gateway endpoint URL for Prod stage for get movie by id function"
-    Value: !Sub "https://${MovieApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/getMovie/{id}"
+    Value: !Sub "https://${MovieApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/getMovie/{id}/{user_id}"
   GetMovieByIdFunction:
     Description: "Get Movie Lambda Function ARN"
     Value: !GetAtt GetMovieByIdFunction.Arn
