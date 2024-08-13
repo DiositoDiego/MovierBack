@@ -97,8 +97,8 @@ def insert_into_movies(title, description, genre, image, status):
     try:
         with connection.cursor() as cursor:
             insert_query = """
-                INSERT INTO Movies (title, description, genre, image, status) VALUES (%s, %s, %s, %s, %s)
-            """
+                 INSERT INTO Movies (title, description, genre, image, status) VALUES (%s, %s, %s, %s, %s)
+             """
             cursor.execute(insert_query, (title, description, genre, image, status))
             connection.commit()
     finally:
