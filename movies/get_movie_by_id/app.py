@@ -31,7 +31,7 @@ def lambda_handler(event, context):
             'headers': headers_open,
             'body': json.dumps({'message': 'Error al obtener la película de la base de datos', 'error': str(e)})
         }
-
+#S
     return {
         'statusCode': 200,
         'headers': headers_open,
