@@ -1,6 +1,7 @@
 from unittest.mock import patch, Mock
 import unittest
 import json
+import tests.properties as props
 
 from comments.get_comments import app
 
@@ -13,7 +14,7 @@ mock_path = {
 
 class TestApp(unittest.TestCase):
 
-    @patch.dict("os.environ", {"REGION_NAME": "us-east-2", "DATA_BASE": "movier-test"})
+    @patch.dict("os.environ", {"REGION_NAME": props.region, "DATA_BASE": props.db_name})
     @patch("comments.get_comments.app.get_comments_with_movie_id")
     @patch("comments.get_comments.app.movie_exists")
     @patch("pymysql.connect")
@@ -33,7 +34,7 @@ class TestApp(unittest.TestCase):
         self.assertEqual(body["Comentarios"][0]["movie_id"], 1)
         self.assertEqual(body["Comentarios"][0]["comment"], "Me encantó la película de principio a fin")
 
-    @patch.dict("os.environ", {"REGION_NAME": "us-east-2", "DATA_BASE": "movier-test"})
+    @patch.dict("os.environ", {"REGION_NAME": props.region, "DATA_BASE": props.db_name})
     def test_lambda_handler_missing_parameters(self):
         mock_body = {"body": json.dumps({})}
         result = app.lambda_handler(mock_body, None)
@@ -42,7 +43,7 @@ class TestApp(unittest.TestCase):
         self.assertIn("message", body)
         self.assertEqual(body["message"], "Error al obtener los parámetros del cuerpo de la solicitud")
 
-    @patch.dict("os.environ", {"REGION_NAME": "us-east-2", "DATA_BASE": "movier-test"})
+    @patch.dict("os.environ", {"REGION_NAME": props.region, "DATA_BASE": props.db_name})
     @patch("comments.get_comments.app.movie_exists")
     def test_lambda_handler_movie_not_found(self, mock_movie_exists):
         mock_movie_exists.return_value = False
@@ -53,7 +54,7 @@ class TestApp(unittest.TestCase):
         self.assertEqual(body["message"], "La película no existe")
 
 
-    @patch.dict("os.environ", {"REGION_NAME": "us-east-2", "DATA_BASE": "movier-test"})
+    @patch.dict("os.environ", {"REGION_NAME": props.region, "DATA_BASE": props.db_name})
     @patch("comments.get_comments.app.movie_exists")
     def test_lambda_handler_movie_id_not_integer(self, mock_movie_exists):
         mock_path = {
@@ -67,7 +68,7 @@ class TestApp(unittest.TestCase):
         self.assertIn("message", body)
         self.assertEqual(body["message"], "El parámetro movie_id debe ser un entero positivo")
 
-    @patch.dict("os.environ", {"REGION_NAME": "us-east-2", "DATA_BASE": "movier-test"})
+    @patch.dict("os.environ", {"REGION_NAME": props.region, "DATA_BASE": props.db_name})
     @patch("comments.get_comments.app.movie_exists")
     def test_lambda_handler_movie_missing_id(self, mock_movie_exists):
         mock_path = {
@@ -81,7 +82,7 @@ class TestApp(unittest.TestCase):
         self.assertIn("message", body)
         self.assertEqual(body["message"], "Falta el parámetro movie_id")
 
-    @patch.dict("os.environ", {"REGION_NAME": "us-east-2", "DATA_BASE": "movier-test"})
+    @patch.dict("os.environ", {"REGION_NAME": props.region, "DATA_BASE": props.db_name})
     @patch("comments.get_comments.app.get_comments_with_movie_id")
     @patch("comments.get_comments.app.movie_exists")
     @patch("pymysql.connect")

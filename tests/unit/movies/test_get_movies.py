@@ -2,6 +2,7 @@ from unittest.mock import patch, Mock
 import unittest
 import json
 from movies.get_movies import app
+import tests.properties as props
 
 mock_event = {
     "body": json.dumps({
@@ -15,7 +16,7 @@ mock_event = {
 
 class TestApp(unittest.TestCase):
 
-    @patch.dict("os.environ", {"REGION_NAME": "us-east-2", "DATA_BASE": "movier-test"})
+    @patch.dict("os.environ", {"REGION_NAME": props.region, "DATA_BASE": props.db_name})
     @patch("movies.get_movies.app.get_movies_with_status")
     @patch("pymysql.connect")
     def test_lambda_handler(self, mock_connect, mock_get_movies_with_status):
@@ -41,7 +42,7 @@ class TestApp(unittest.TestCase):
 
         mock_get_movies_with_status.assert_called_once_with(1)
 
-    @patch.dict("os.environ", {"REGION_NAME": "us-east-2", "DATA_BASE": "movier-test"})
+    @patch.dict("os.environ", {"REGION_NAME": props.region, "DATA_BASE": props.db_name})
     @patch("movies.get_movies.app.get_movies_with_status")
     def test_lambda_handler_no_movies(self, mock_get_movies_with_status):
         mock_get_movies_with_status.return_value = []
@@ -51,7 +52,7 @@ class TestApp(unittest.TestCase):
         self.assertIn("Peliculas", body)
         self.assertEqual(len(body["Peliculas"]), 0)
 
-    @patch.dict("os.environ", {"REGION_NAME": "us-east-2", "DATA_BASE": "movier-test"})
+    @patch.dict("os.environ", {"REGION_NAME": props.region, "DATA_BASE": props.db_name})
     @patch("movies.get_movies.app.get_movies_with_status")
     @patch("pymysql.connect")
     def test_lambda_handler_db_error(self, mock_connect, mock_get_movies_with_status):

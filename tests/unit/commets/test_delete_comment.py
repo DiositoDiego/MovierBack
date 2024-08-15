@@ -1,6 +1,7 @@
 from unittest.mock import patch, Mock
 import unittest
 import json
+import tests.properties as props
 
 from comments.delete_comment import app
 
@@ -14,7 +15,7 @@ mock_body = {
 
 class TestApp(unittest.TestCase):
 
-    @patch.dict("os.environ", {"REGION_NAME": "us-east-2", "DATA_BASE": "movier-test"})
+    @patch.dict("os.environ", {"REGION_NAME": props.region, "DATA_BASE": props.db_name})
     @patch("comments.delete_comment.app.get_comment_with_id")
     @patch("comments.delete_comment.app.delete_comment")
     @patch("pymysql.connect")
@@ -33,7 +34,7 @@ class TestApp(unittest.TestCase):
         mock_get_comment_with_id.assert_called_once_with(1)
         mock_delete_comment.assert_called_once_with(1)
 
-    @patch.dict("os.environ", {"REGION_NAME": "us-east-2", "DATA_BASE": "movier-test"})
+    @patch.dict("os.environ", {"REGION_NAME": props.region, "DATA_BASE": props.db_name})
     def test_lambda_handler_missing_parameters(self):
         mock_body_without_parameters = {"body": json.dumps({})}
         result = app.lambda_handler(mock_body_without_parameters, None)
@@ -42,7 +43,7 @@ class TestApp(unittest.TestCase):
         self.assertIn("message", body)
         self.assertEqual(body["message"], "Falta el parámetro comment_id")
 
-    @patch.dict("os.environ", {"REGION_NAME": "us-east-2", "DATA_BASE": "movier-test"})
+    @patch.dict("os.environ", {"REGION_NAME": props.region, "DATA_BASE": props.db_name})
     def test_lambda_handler_missing_user_parameter(self):
         mock_body_without_user_parameters = {"body": json.dumps({
             "comment_id": 1
@@ -53,7 +54,7 @@ class TestApp(unittest.TestCase):
         self.assertIn("message", body)
         self.assertEqual(body["message"], "Falta el parámetro user_id")
 
-    @patch.dict("os.environ", {"REGION_NAME": "us-east-2", "DATA_BASE": "movier-test"})
+    @patch.dict("os.environ", {"REGION_NAME": props.region, "DATA_BASE": props.db_name})
     @patch("pymysql.connect")
     def test_lambda_handler_database_error(self, mock_connect):
         mock_connect.side_effect = Exception("Error al procesar la solicitud")
@@ -68,7 +69,7 @@ class TestApp(unittest.TestCase):
         self.assertIn("error", body)
         self.assertEqual(body["error"], "Error al procesar la solicitud")
 
-    @patch.dict("os.environ", {"REGION_NAME": "us-east-2", "DATA_BASE": "movier-test"})
+    @patch.dict("os.environ", {"REGION_NAME": props.region, "DATA_BASE": props.db_name})
     @patch("comments.delete_comment.app.get_comment_with_id")
     @patch("comments.delete_comment.app.delete_comment")
     @patch("pymysql.connect")
@@ -89,7 +90,7 @@ class TestApp(unittest.TestCase):
         self.assertIn("message", body)
         self.assertEqual(body["message"], "Comentario no encontrado")
 
-    @patch.dict("os.environ", {"REGION_NAME": "us-east-2", "DATA_BASE": "movier-test"})
+    @patch.dict("os.environ", {"REGION_NAME": props.region, "DATA_BASE": props.db_name})
     @patch("pymysql.connect")
     def test_lambda_handler_error_getting_parameters(self, mock_connect):
         mock_connect.return_value = Mock()
@@ -103,7 +104,7 @@ class TestApp(unittest.TestCase):
         self.assertEqual(body["message"], "Error al obtener los parámetros del cuerpo de la solicitud")
         self.assertIn("error", body)
 
-    @patch.dict("os.environ", {"REGION_NAME": "us-east-2", "DATA_BASE": "movier-test"})
+    @patch.dict("os.environ", {"REGION_NAME": props.region, "DATA_BASE": props.db_name})
     @patch("pymysql.connect")
     def test_lambda_handler_comment_id_not_integer(self, mock_connect):
         mock_connect.return_value = Mock()
@@ -116,7 +117,7 @@ class TestApp(unittest.TestCase):
         self.assertIn("message", body)
         self.assertEqual(body["message"], "El parámetro comment_id debe ser un entero positivo")
 
-    @patch.dict("os.environ", {"REGION_NAME": "us-east-2", "DATA_BASE": "movier-test"})
+    @patch.dict("os.environ", {"REGION_NAME": props.region, "DATA_BASE": props.db_name})
     @patch("pymysql.connect")
     def test_lambda_handler_user_id_not_integer(self, mock_connect):
         mock_connect.return_value = Mock()
@@ -129,7 +130,7 @@ class TestApp(unittest.TestCase):
         self.assertIn("message", body)
         self.assertEqual(body["message"], "El parámetro user_id debe ser un entero positivo")
 
-    @patch.dict("os.environ", {"REGION_NAME": "us-east-2", "DATA_BASE": "movier-test"})
+    @patch.dict("os.environ", {"REGION_NAME": props.region, "DATA_BASE": props.db_name})
     @patch("comments.delete_comment.app.get_comment_with_id")
     @patch("pymysql.connect")
     def test_lambda_handler_user_not_authorized(self, mock_connect, mock_get_comment_with_id):

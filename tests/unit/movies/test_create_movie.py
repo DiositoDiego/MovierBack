@@ -2,6 +2,7 @@ from unittest.mock import patch, Mock
 import unittest
 import json
 from movies.create_movie import (app)
+import tests.properties as props
 
 mock_body = {
     "body": json.dumps({
@@ -16,7 +17,7 @@ mock_body = {
 
 class TestApp(unittest.TestCase):
 
-    @patch.dict("os.environ", {"REGION_NAME": "us-east-2", "DATA_BASE": "movier-test"})
+    @patch.dict("os.environ", {"REGION_NAME": props.region, "DATA_BASE": props.db_name})
     @patch("movies.create_movie.app.movie_exists")
     @patch("movies.create_movie.app.insert_into_movies")
     @patch("pymysql.connect")
@@ -38,7 +39,7 @@ class TestApp(unittest.TestCase):
         mock_movie_exists.assert_called_once_with("Test1")
         mock_insert_into_movies.assert_called_once_with("Test1", "Test1", "Comedia", "dsad", 1)
 
-    @patch.dict("os.environ", {"REGION_NAME": "us-east-2", "DATA_BASE": "movier-test"})
+    @patch.dict("os.environ", {"REGION_NAME": props.region, "DATA_BASE": props.db_name})
     def test_lambda_handler_missing_parameters(self):
         mock_body = {"body": json.dumps({})}
         result = app.lambda_handler(mock_body, None)
@@ -47,7 +48,7 @@ class TestApp(unittest.TestCase):
         self.assertIn("message", body)
         self.assertEqual(body["message"], "Faltan parámetros")
 
-    @patch.dict("os.environ", {"REGION_NAME": "us-east-2", "DATA_BASE": "movier-test"})
+    @patch.dict("os.environ", {"REGION_NAME": props.region, "DATA_BASE": props.db_name})
     @patch("movies.create_movie.app.movie_exists")
     def test_lambda_handler_movie_already_exists(self, mock_movie_exists):
         mock_movie_exists.return_value = True
@@ -57,7 +58,7 @@ class TestApp(unittest.TestCase):
         self.assertIn("message", body)
         self.assertEqual(body["message"], "La película con el mismo título ya existe")
 
-    @patch.dict("os.environ", {"REGION_NAME": "us-east-2", "DATA_BASE": "movier-test"})
+    @patch.dict("os.environ", {"REGION_NAME": props.region, "DATA_BASE": props.db_name})
     def test_lambda_handler_parameter_length_exceeded(self):
         mock_body = {
             "body": json.dumps({
@@ -74,7 +75,7 @@ class TestApp(unittest.TestCase):
         self.assertIn("message", body)
         self.assertEqual(body["message"], "Los parámetros deben ser cadenas de texto de máximo 255 caracteres")
 
-    @patch.dict("os.environ", {"REGION_NAME": "us-east-2", "DATA_BASE": "movier-test"})
+    @patch.dict("os.environ", {"REGION_NAME": props.region, "DATA_BASE": props.db_name})
     def test_lambda_handler_invalid_status_type(self):
         mock_body = {
             "body": json.dumps({
@@ -91,7 +92,7 @@ class TestApp(unittest.TestCase):
         self.assertIn("message", body)
         self.assertEqual(body["message"], "El parámetro status debe ser un número entero")
 
-    @patch.dict("os.environ", {"REGION_NAME": "us-east-2", "DATA_BASE": "movier-test"})
+    @patch.dict("os.environ", {"REGION_NAME": props.region, "DATA_BASE": props.db_name})
     def test_lambda_handler_status_out_of_range(self):
         mock_body = {
             "body": json.dumps({
@@ -108,7 +109,7 @@ class TestApp(unittest.TestCase):
         self.assertIn("message", body)
         self.assertEqual(body["message"], "El parámetro status debe ser 0 o 1")
 
-    @patch.dict("os.environ", {"REGION_NAME": "us-east-2", "DATA_BASE": "movier-test"})
+    @patch.dict("os.environ", {"REGION_NAME": props.region, "DATA_BASE": props.db_name})
     @patch("movies.create_movie.app.insert_into_movies")
     @patch("pymysql.connect")
     def test_lamda_handler_500(self, mock_connect, __ ):

@@ -3,6 +3,7 @@ import unittest
 from unittest.mock import patch, Mock
 import pymysql
 from movies.update_movie import app
+import tests.properties as props
 
 mock_body = {
     "pathParameters": {
@@ -19,7 +20,7 @@ mock_body = {
 
 class TestLambdaHandler(unittest.TestCase):
 
-    @patch.dict("os.environ", {"REGION_NAME": "us-east-2", "DATA_BASE": "movier-test"})
+    @patch.dict("os.environ", {"REGION_NAME": props.region, "DATA_BASE": props.db_name})
     @patch("movies.update_movie.app.title_exists")
     @patch("movies.update_movie.app.update_movie")
     @patch("pymysql.connect")
@@ -38,7 +39,7 @@ class TestLambdaHandler(unittest.TestCase):
         mock_title_exists.assert_called_once_with("Test1", "1")
         mock_update_movie.assert_called_once_with("1", "Test1", "Test1", "Comedia", "dsad", None)
 
-    @patch.dict("os.environ", {"REGION_NAME": "us-east-2", "DATA_BASE": "movier-test"})
+    @patch.dict("os.environ", {"REGION_NAME": props.region, "DATA_BASE": props.db_name})
     def test_lambda_handler_missing_id(self):
         mock_body = {"body": json.dumps({})}
         result = app.lambda_handler(mock_body, None)
@@ -47,7 +48,7 @@ class TestLambdaHandler(unittest.TestCase):
         self.assertIn("message", body)
         self.assertEqual(body["message"], "Error al obtener el ID de la película")
 
-    @patch.dict("os.environ", {"REGION_NAME": "us-east-2", "DATA_BASE": "movier-test"})
+    @patch.dict("os.environ", {"REGION_NAME": props.region, "DATA_BASE": props.db_name})
     @patch("movies.update_movie.app.title_exists")
     def test_lambda_handler_movie_already_exists(self, mock_title_exists):
         mock_title_exists.return_value = True
@@ -57,7 +58,7 @@ class TestLambdaHandler(unittest.TestCase):
         self.assertIn("message", body)
         self.assertEqual(body["message"], "La película con el mismo título ya existe")
 
-    @patch.dict("os.environ", {"REGION_NAME": "us-east-2", "DATA_BASE": "movier-test"})
+    @patch.dict("os.environ", {"REGION_NAME": props.region, "DATA_BASE": props.db_name})
     def test_lambda_handler_missing_fields(self):
         mock_body_with_missing_fields = {
             "pathParameters": {
@@ -76,7 +77,7 @@ class TestLambdaHandler(unittest.TestCase):
         self.assertIn("message", body)
         self.assertEqual(body["message"], "Faltan campos a actualizar")
 
-    @patch.dict("os.environ", {"REGION_NAME": "us-east-2", "DATA_BASE": "movier-test"})
+    @patch.dict("os.environ", {"REGION_NAME": "us-east-2", "DATA_BASE": props.db_name})
     def test_lambda_handler_long_fields(self):
         long_string = "a" * 256
         mock_body_with_long_fields = {
@@ -96,7 +97,7 @@ class TestLambdaHandler(unittest.TestCase):
         self.assertIn("message", body)
         self.assertEqual(body["message"], "El título no debe exceder los 255 caracteres")
 
-    @patch.dict("os.environ", {"REGION_NAME": "us-east-2", "DATA_BASE": "movier-test"})
+    @patch.dict("os.environ", {"REGION_NAME": "us-east-2", "DATA_BASE": props.db_name})
     @patch("movies.update_movie.app.update_movie")
     @patch("pymysql.connect")
     def test_lambda_handler_update_db_error(self, mock_connect, mock_update_movie):

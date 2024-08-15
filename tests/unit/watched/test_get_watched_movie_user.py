@@ -1,6 +1,7 @@
 from unittest.mock import patch, Mock
 import unittest
 import json
+import tests.properties as props
 
 from watched.get_watched_movies_user.app import lambda_handler
 
@@ -12,7 +13,7 @@ mock_path = {
 
 class TestLambdaHandler(unittest.TestCase):
 
-    @patch.dict("os.environ", {"REGION_NAME": "us-east-2", "DATA_BASE": "movier-test"})
+    @patch.dict("os.environ", {"REGION_NAME": props.region, "DATA_BASE": props.db_name})
     @patch("pymysql.connect")
     def test_lambda_handler_missing_id(self, mock_connect):
         mock_path_missing_id = {
@@ -28,7 +29,7 @@ class TestLambdaHandler(unittest.TestCase):
 
 
     #test for Error al obtener las películas vistas del usuario
-    @patch.dict("os.environ", {"REGION_NAME": "us-east-2", "DATA_BASE": "movier-test"})
+    @patch.dict("os.environ", {"REGION_NAME": props.region, "DATA_BASE": props.db_name})
     @patch("pymysql.connect")
     def test_lambda_handler_error_get_movies(self, mock_connect):
         mock_connect.return_value.cursor.return_value.__enter__.return_value.fetchall.side_effect = Exception("Error")
@@ -42,7 +43,7 @@ class TestLambdaHandler(unittest.TestCase):
         self.assertIn("error", body)
         self.assertEqual(body["error"], "Error")
 
-    @patch.dict("os.environ", {"REGION_NAME": "us-east-2", "DATA_BASE": "movier-test"})
+    @patch.dict("os.environ", {"REGION_NAME": props.region, "DATA_BASE": props.db_name})
     @patch("pymysql.connect")
     def test_lambda_handler_successful(self, mock_connect):
         mock_cursor = mock_connect.return_value.cursor.return_value
