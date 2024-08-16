@@ -1,5 +1,5 @@
 import json
-from utils import get_connection
+from watched.get_watched_movies_user.utils import get_connection
 
 
 headers_open = {

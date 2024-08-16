@@ -1,6 +1,6 @@
 import json
 import pymysql
-from utils import get_connection
+from movies.get_movies.utils import get_connection
 
 
 headers_open = {

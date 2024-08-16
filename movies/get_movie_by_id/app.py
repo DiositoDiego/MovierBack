@@ -1,5 +1,5 @@
 import json
-from utils import get_connection
+from movies.get_movie_by_id.utils import get_connection
 
 headers_open = {
     'Access-Control-Allow-Origin': '*',

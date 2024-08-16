@@ -1,5 +1,5 @@
 import json
-from utils import get_connection
+from movies.change_status_movie.utils import get_connection
 
 
 headers_open = {

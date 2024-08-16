@@ -1,6 +1,6 @@
 import json
 import pymysql
-from utils import get_connection
+from comments.delete_comment.utils import get_connection
 
 
 headers_open = {

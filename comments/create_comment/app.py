@@ -1,5 +1,5 @@
 import json
-from utils import get_connection
+from comments.create_comment.utils import get_connection
 
 
 headers_open = {

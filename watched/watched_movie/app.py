@@ -1,5 +1,5 @@
 import json
-from utils import get_connection
+from watched.watched_movie.utils import get_connection
 
 
 

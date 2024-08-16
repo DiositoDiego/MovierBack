@@ -1,5 +1,5 @@
 import json
-from utils import get_connection
+from comments.get_comments.utils import get_connection
 
 headers_open = {
     'Access-Control-Allow-Origin': '*',
