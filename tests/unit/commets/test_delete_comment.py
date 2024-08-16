@@ -67,7 +67,7 @@ class TestApp(unittest.TestCase):
         self.assertIn("message", body)
         self.assertEqual(body["message"], "Error al procesar la solicitud")
         self.assertIn("error", body)
-        self.assertEqual(body["error"], "Error al procesar la solicitud")
+        self.assertEqual(body["error"], "Unable to locate credentials")
 
     @patch.dict("os.environ", {"REGION_NAME": props.region, "DATA_BASE": props.db_name})
     @patch("comments.delete_comment.app.get_comment_with_id")

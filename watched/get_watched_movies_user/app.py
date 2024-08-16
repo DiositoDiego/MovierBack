@@ -1,4 +1,5 @@
 import json
+import pymysql
 from watched.get_watched_movies_user.utils import get_connection
 
 

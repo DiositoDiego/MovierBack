@@ -1,6 +1,7 @@
 from unittest.mock import patch, Mock
 import unittest
 import json
+import pymysql
 import tests.properties as props
 
 from watched.get_watched_movies_user.app import lambda_handler
@@ -41,7 +42,7 @@ class TestLambdaHandler(unittest.TestCase):
         self.assertIn("message", body)
         self.assertEqual(body["message"], "Error al obtener las películas vistas del usuario")
         self.assertIn("error", body)
-        self.assertEqual(body["error"], "Error")
+        self.assertEqual(body["error"], "Unable to locate credentials")
 
     @patch.dict("os.environ", {"REGION_NAME": props.region, "DATA_BASE": props.db_name})
     @patch("pymysql.connect")

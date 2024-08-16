@@ -1,4 +1,5 @@
 import json
+import pymysql
 from movies.search_movies.utils import get_connection
 
 headers_open = {

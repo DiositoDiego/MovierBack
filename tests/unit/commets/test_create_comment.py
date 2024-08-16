@@ -155,13 +155,13 @@ class TestApp(unittest.TestCase):
             "body": json.dumps({
                 "user_id": 1,
                 "movie_id": 1,
-                "comment": "a" * 1001
+                "comment": "a" * 256
             })
         }
         result = app.lambda_handler(mock_body, None)
         self.assertEqual(result['statusCode'], 400)
         body = json.loads(result['body'])
         self.assertIn("message", body)
-        self.assertEqual(body["message"], "El comentario no puede exceder los 1000 caracteres")
+        self.assertEqual(body["message"], "El comentario no puede exceder los 255 caracteres")
 
 

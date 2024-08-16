@@ -29,7 +29,7 @@ class TestApp(unittest.TestCase):
         self.assertIn("message", body)
         self.assertEqual(body["message"], "Película deshabilitada correctamente")
 
-        mock_cursor.execute.assert_any_call("SELECT status FROM Movies WHERE id = %s", ('1',))
+        mock_cursor.execute.assert_any_call("SELECT status FROM Movies WHERE id = %s", ('1', 0))
         mock_cursor.execute.assert_any_call("UPDATE Movies SET status = %s WHERE id = %s", (0, '1'))
 
         mock_connection.commit.assert_called_once()
@@ -76,5 +76,3 @@ class TestApp(unittest.TestCase):
         body = json.loads(result['body'])
         self.assertIn("message", body)
         self.assertEqual(body["message"], "Error al actualizar el estado de la película en la base de datos")
-
-

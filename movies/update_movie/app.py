@@ -1,4 +1,5 @@
 import json
+import pymysql
 from movies.update_movie.utils import get_connection
 
 
