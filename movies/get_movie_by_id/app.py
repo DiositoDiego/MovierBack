@@ -46,7 +46,7 @@ def get_movie_by_id(status, movie_id, user_id):
         with connection.cursor() as cursor:
             query = """
                 SELECT id, title, description, genre, image, status,
-                       (SELECT COUNT(*) FROM WatchedMovies WHERE WatchedMovies.movie_id = Movies.id AND WatchedMovies.user_id = %s) AS watched
+                       (SELECT status FROM WatchedMovies WHERE WatchedMovies.movie_id = Movies.id AND WatchedMovies.user_id = %s) AS watched
                 FROM Movies
                 WHERE status = %s AND id = %s;
                 """
