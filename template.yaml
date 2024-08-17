@@ -38,7 +38,7 @@ Resources:
                 Resource: "*"
         - PolicyName: CognitoAdminInitiateAuth
           PolicyDocument:
-            Version: '2012-10-17'
+            Version: "2012-10-17"
             Statement:
               - Effect: Allow
                 Action:
@@ -63,7 +63,7 @@ Resources:
                   - cognito-idp:AdminSetUserSettings
                   - cognito-idp:AdminUpdateAuthEventFeedback
                   - cognito-idp:AdminUserGlobalSignOut
-                Resource: 'arn:aws:cognito-idp:us-east-1:*:*'
+                Resource: "arn:aws:cognito-idp:us-east-1:*:*"
         - PolicyName: SSMGetParameter
           PolicyDocument:
             Version: "2012-10-17"
