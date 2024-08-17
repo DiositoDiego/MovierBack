@@ -64,7 +64,7 @@ Resources:
                   - cognito-idp:AdminUpdateAuthEventFeedback
                   - cognito-idp:AdminUserGlobalSignOut
                 Resource: "arn:aws:cognito-idp:us-east-1:*:*"
-        - PolicyName: SSMGetParameter
+        - PolicyName: MovierSecrets
           PolicyDocument:
             Version: "2012-10-17"
             Statement:
