@@ -527,10 +527,10 @@ Outputs:
   RDSEndpoint:
     Description: Endpoint of the RDS instance
     Value: !GetAtt RDSInstance.Endpoint.Address
-    RDSPassword:
-      Description: Password for the RDS instance
-      # Use Fn::GetAtt to retrieve the secret value
-      Value: !Sub '{{resolve:secretsmanager:${RDSSecret}:SecretString:password}}'
+  RDSPassword:
+    Description: Password for the RDS instance
+    # Use Fn::GetAtt to retrieve the secret value
+    Value: !Sub '{{resolve:secretsmanager:${RDSSecret}:SecretString:password}}'
   CreateMovieApi:
     Description: "API Gateway endpoint URL for Prod stage for create movie function"
     Value: !Sub "https://${MovieApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/create"
