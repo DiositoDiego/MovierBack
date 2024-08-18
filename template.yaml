@@ -64,6 +64,44 @@ Resources:
                   - cognito-idp:AdminUpdateAuthEventFeedback
                   - cognito-idp:AdminUserGlobalSignOut
                 Resource: "arn:aws:cognito-idp:us-east-1:*:*"
+        - PolicyName: MovierSecrets
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - secretsmanager:GetSecretValue
+                Resource: "arn:aws:secretsmanager:us-east-1:*"
+
+  MyCognitoUserPool:
+    Type: AWS::Cognito::UserPool
+    Properties:
+      UserPoolName: Movier2
+      UsernameAttributes:
+        - email
+      AutoVerifiedAttributes:
+        - email
+      Policies:
+        PasswordPolicy:
+          MinimumLength: 8
+          RequireUppercase: True
+          RequireLowercase: True
+          RequireNumbers: True
+          RequireSymbols: True
+
+  AdminGroup:
+    Type: AWS::Cognito::UserPoolGroup
+    Properties:
+      GroupName: Administrador
+      UserPoolId: !Ref MyCognitoUserPool
+      Precedence: 1
+
+  UsersGroup:
+    Type: AWS::Cognito::UserPoolGroup
+    Properties:
+      GroupName: Usuario
+      UserPoolId: !Ref MyCognitoUserPool
+      Precedence: 2
 
   AuthApi:
     Type: AWS::Serverless::Api
@@ -200,7 +238,23 @@ Resources:
         GetMovie:
           Type: Api
           Properties:
-            Path: /getMovie/{id}
+            Path: /getMovie/{id}/{user_id}
+            RestApiId: !Ref MovieApi
+            Method: get
+
+  SearchMoviesFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: movies/search_movies/
+      Handler: app.lambda_handler
+      Runtime: python3.12
+      Architectures:
+        - x86_64
+      Events:
+        GetMovie:
+          Type: Api
+          Properties:
+            Path: /searchMovies/{name}
             RestApiId: !Ref MovieApi
             Method: get
 
@@ -340,11 +394,16 @@ Outputs:
 
   GetMovieByIdApi:
     Description: "API Gateway endpoint URL for Prod stage for get movie by id function"
-    Value: !Sub "https://${MovieApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/getMovie/{id}"
+    Value: !Sub "https://${MovieApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/getMovie/{id}/{user_id}"
   GetMovieByIdFunction:
     Description: "Get Movie Lambda Function ARN"
     Value: !GetAtt GetMovieByIdFunction.Arn
-
+  SearchMoviesApi:
+    Description: "API Gateway endpoint URL for Prod stage for get movie by id function"
+    Value: !Sub "https://${MovieApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/searchMovies/{name}"
+  SearchMoviesFunction:
+    Description: "Get Movie Lambda Function ARN"
+    Value: !GetAtt SearchMoviesFunction.Arn
   UpdateMovieApi:
     Description: "API Gateway endpoint URL for Prod stage for update movie function"
     Value: !Sub "https://${MovieApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/update/{id}"

@@ -17,7 +17,7 @@ headers_open = {
 
 def lambda_handler(event, __):
     client = boto3.client('cognito-idp', region_name='us-east-1')
-    client_id = "7ss3ku3uarreptpl5eg5khksoj"
+    client_id = "2iav8vp8gi87dkaf45i03ti7o2"
 
     try:
         body_parameters = json.loads(event["body"])
@@ -46,7 +46,7 @@ def lambda_handler(event, __):
         # Get user groups
         user_groups = client.admin_list_groups_for_user(
             Username=username,
-            UserPoolId='us-east-1_AmpHw9yS0'  # Replace with your User Pool ID
+            UserPoolId='us-east-1_tIlTA3kOz'  # Replace with your User Pool ID
         )
 
         # Determine the role based on the group
