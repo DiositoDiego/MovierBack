@@ -71,7 +71,7 @@ Resources:
               - Effect: Allow
                 Action:
                   - secretsmanager:GetSecretValue
-                Resource: "arn:aws:secretsmanager:us-east-1:533267376951:secret:prd/dataBase/appMovier-123456"
+                Resource: "arn:aws:secretsmanager:*"
 
   MyCognitoUserPool:
     Type: AWS::Cognito::UserPool
@@ -109,35 +109,16 @@ Resources:
       StageName: Prod
       Name: AuthApi
 
-  MovieAuthorizerMovier:
-    Type: AWS::ApiGateway::Authorizer
-    Properties:
-      Name: MovieAuthorizerMovier
-      IdentitySource: method.request.header.Authorization
-      RestApiId: !Ref MovieApi
-      Type: COGNITO_USER_POOLS
-      ProviderARNs:
-        - !GetAtt MyCognitoUserPool.Arn
-
   MovieApi:
     Type: AWS::Serverless::Api
     Properties:
       Name: MovieApi
       StageName: Prod
       Auth:
+        DefaultAuthorizer: CognitoAuthorizer
         Authorizers:
-          MovieAuthorizerMovier:
+          CognitoAuthorizer:
             UserPoolArn: !GetAtt MyCognitoUserPool.Arn
-
-  CommentAuthorizerMovier:
-    Type: AWS::ApiGateway::Authorizer
-    Properties:
-      Name: CommentAuthorizerMovier
-      IdentitySource: method.request.header.Authorization
-      RestApiId: !Ref CommentApi
-      Type: COGNITO_USER_POOLS
-      ProviderARNs:
-        - !GetAtt MyCognitoUserPool.Arn
 
   CommentApi:
     Type: AWS::Serverless::Api
@@ -145,19 +126,10 @@ Resources:
       Name: CommentApi
       StageName: Prod
       Auth:
+        DefaultAuthorizer: CognitoAuthorizer
         Authorizers:
-          CommentAuthorizerMovier:
+          CognitoAuthorizer:
             UserPoolArn: !GetAtt MyCognitoUserPool.Arn
-
-  WatchedAuthorizerMovier:
-    Type: AWS::ApiGateway::Authorizer
-    Properties:
-      Name: WatchedAuthorizerMovier
-      IdentitySource: method.request.header.Authorization
-      RestApiId: !Ref WatchedApi
-      Type: COGNITO_USER_POOLS
-      ProviderARNs:
-        - !GetAtt MyCognitoUserPool.Arn
 
   WatchedApi:
     Type: AWS::Serverless::Api
@@ -165,8 +137,9 @@ Resources:
       Name: WatchedApi
       StageName: Prod
       Auth:
+        DefaultAuthorizer: CognitoAuthorizer
         Authorizers:
-          WatchedAuthorizerMovier:
+          CognitoAuthorizer:
             UserPoolArn: !GetAtt MyCognitoUserPool.Arn
 
   LoginFunction:
@@ -236,7 +209,7 @@ Resources:
             RestApiId: !Ref MovieApi
             Method: post
             Auth:
-              Authorizer: MovieAuthorizerMovier
+              Authorizer: CognitoAuthorizer
 
   GetMovieFunction:
     Type: AWS::Serverless::Function
@@ -254,7 +227,7 @@ Resources:
             RestApiId: !Ref MovieApi
             Method: get
             Auth:
-              Authorizer: MovieAuthorizerMovier
+              Authorizer: CognitoAuthorizer
 
   GetAllMovieFunction:
     Type: AWS::Serverless::Function
@@ -272,7 +245,7 @@ Resources:
             RestApiId: !Ref MovieApi
             Method: get
             Auth:
-              Authorizer: MovieAuthorizerMovier
+              Authorizer: CognitoAuthorizer
 
   GetMovieByIdFunction:
     Type: AWS::Serverless::Function
@@ -290,7 +263,7 @@ Resources:
             RestApiId: !Ref MovieApi
             Method: get
             Auth:
-              Authorizer: MovieAuthorizerMovier
+              Authorizer: CognitoAuthorizer
 
   SearchMoviesFunction:
     Type: AWS::Serverless::Function
@@ -308,7 +281,7 @@ Resources:
             RestApiId: !Ref MovieApi
             Method: get
             Auth:
-              Authorizer: MovieAuthorizerMovier
+              Authorizer: CognitoAuthorizer
 
   UpdateMovieFunction:
     Type: AWS::Serverless::Function
@@ -326,7 +299,7 @@ Resources:
             RestApiId: !Ref MovieApi
             Method: put
             Auth:
-              Authorizer: MovieAuthorizerMovier
+              Authorizer: CognitoAuthorizer
 
   ChangeStatusMovieFunction:
     Type: AWS::Serverless::Function
@@ -344,7 +317,7 @@ Resources:
             RestApiId: !Ref MovieApi
             Method: patch
             Auth:
-              Authorizer: MovieAuthorizerMovier
+              Authorizer: CognitoAuthorizer
 
   CreateCommentFunction:
     Type: AWS::Serverless::Function
@@ -362,7 +335,7 @@ Resources:
             RestApiId: !Ref CommentApi
             Method: post
             Auth:
-              Authorizer: CommentAuthorizerMovier
+              Authorizer: CognitoAuthorizer
 
   GetCommentsFunction:
     Type: AWS::Serverless::Function
@@ -380,7 +353,7 @@ Resources:
             RestApiId: !Ref CommentApi
             Method: get
             Auth:
-              Authorizer: CommentAuthorizerMovier
+              Authorizer: CognitoAuthorizer
 
   DeleteCommentFunction:
     Type: AWS::Serverless::Function
@@ -398,7 +371,7 @@ Resources:
             RestApiId: !Ref CommentApi
             Method: delete
             Auth:
-              Authorizer: CommentAuthorizerMovier
+              Authorizer: CognitoAuthorizer
 
   WatchedMovieFunction:
     Type: AWS::Serverless::Function
@@ -416,7 +389,7 @@ Resources:
             RestApiId: !Ref WatchedApi
             Method: post
             Auth:
-              Authorizer: WatchedAuthorizerMovier
+              Authorizer: CognitoAuthorizer
 
   GetWatchedMovieFunction:
     Type: AWS::Serverless::Function
@@ -434,7 +407,7 @@ Resources:
             RestApiId: !Ref WatchedApi
             Method: get
             Auth:
-              Authorizer: WatchedAuthorizerMovier
+              Authorizer: CognitoAuthorizer
 
 Outputs:
   CreateMovieApi:
