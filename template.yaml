@@ -64,14 +64,45 @@ Resources:
                   - cognito-idp:AdminUpdateAuthEventFeedback
                   - cognito-idp:AdminUserGlobalSignOut
                 Resource: "arn:aws:cognito-idp:us-east-1:*:*"
-        - PolicyName: SSMGetParameter
+        - PolicyName: MovierSecrets
           PolicyDocument:
             Version: "2012-10-17"
             Statement:
               - Effect: Allow
                 Action:
                   - secretsmanager:GetSecretValue
-                Resource: "arn:aws:secretsmanager:us-east-1:533267376951:secret:prd/dataBase/appMovier-123456"
+                Resource: "arn:aws:secretsmanager:us-east-1:*"
+
+  MyCognitoUserPool:
+    Type: AWS::Cognito::UserPool
+    Properties:
+      UserPoolName: Movier2
+      UsernameAttributes:
+        - email
+      AutoVerifiedAttributes:
+        - email
+      Policies:
+        PasswordPolicy:
+          MinimumLength: 8
+          RequireUppercase: True
+          RequireLowercase: True
+          RequireNumbers: True
+          RequireSymbols: True
+
+  AdminGroup:
+    Type: AWS::Cognito::UserPoolGroup
+    Properties:
+      GroupName: Administrador
+      UserPoolId: !Ref MyCognitoUserPool
+      Precedence: 1
+
+  UsersGroup:
+    Type: AWS::Cognito::UserPoolGroup
+    Properties:
+      GroupName: Usuario
+      UserPoolId: !Ref MyCognitoUserPool
+      Precedence: 2
+
   AuthApi:
     Type: AWS::Serverless::Api
     Properties:

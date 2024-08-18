@@ -17,8 +17,8 @@ headers_open = {
 
 def lambda_handler(event, __):
     client = boto3.client('cognito-idp', region_name='us-east-1')
-    user_pool_id = "us-east-1_AmpHw9yS0"
-    client_id = "7ss3ku3uarreptpl5eg5khksoj"
+    user_pool_id = "us-east-1_tIlTA3kOz"
+    client_id = "2iav8vp8gi87dkaf45i03ti7o2"
     try:
         # Parsea el body del evento
         body_parameters = json.loads(event["body"])
