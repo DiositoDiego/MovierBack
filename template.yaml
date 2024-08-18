@@ -73,10 +73,10 @@ Resources:
                   - secretsmanager:GetSecretValue
                 Resource: "arn:aws:secretsmanager:us-east-1:533267376951:secret:prd/dataBase/appMovier-123456"
 
-  MovierUserPool:
+  MyCognitoUserPool:
     Type: AWS::Cognito::UserPool
     Properties:
-      UserPoolName: Movier3
+      UserPoolName: Movier2
       UsernameAttributes:
         - email
       AutoVerifiedAttributes:
@@ -89,87 +89,87 @@ Resources:
           RequireNumbers: True
           RequireSymbols: True
 
-  AdministradorGroup:
+  AdminGroup:
     Type: AWS::Cognito::UserPoolGroup
     Properties:
       GroupName: Administrador
-      UserPoolId: !Ref MovierUserPool
+      UserPoolId: !Ref MyCognitoUserPool
       Precedence: 1
 
-  UsuariosGroup:
+  UsersGroup:
     Type: AWS::Cognito::UserPoolGroup
     Properties:
       GroupName: Usuario
-      UserPoolId: !Ref MovierUserPool
+      UserPoolId: !Ref MyCognitoUserPool
       Precedence: 2
 
-  AuthorizationApi:
+  AuthApi:
     Type: AWS::Serverless::Api
     Properties:
       StageName: Prod
-      Name: AuthorizationApi
+      Name: AuthApi
 
-  MovieeAuthorizer:
+  MovieAuthorizerMovier:
     Type: AWS::ApiGateway::Authorizer
     Properties:
-      Name: MovieeAuthorizer
+      Name: MovieAuthorizerMovier
       IdentitySource: method.request.header.Authorization
-      RestApiId: !Ref MoviesApi
+      RestApiId: !Ref MovieApi
       Type: COGNITO_USER_POOLS
       ProviderARNs:
-        - !GetAtt MovierUserPool.Arn
+        - !GetAtt MyCognitoUserPool.Arn
 
-  MoviesApi:
+  MovieApi:
     Type: AWS::Serverless::Api
     Properties:
-      Name: MoviesApi
+      Name: MovieApi
       StageName: Prod
       Auth:
         Authorizers:
-          MovieeAuthorizer:
-            UserPoolArn: !GetAtt MovierUserPool.Arn
+          MovieAuthorizerMovier:
+            UserPoolArn: !GetAtt MyCognitoUserPool.Arn
 
-  CommenttAuthorizer:
+  CommentAuthorizerMovier:
     Type: AWS::ApiGateway::Authorizer
     Properties:
-      Name: CommenttAuthorizer
+      Name: CommentAuthorizerMovier
       IdentitySource: method.request.header.Authorization
-      RestApiId: !Ref CommentsApi
+      RestApiId: !Ref CommentApi
       Type: COGNITO_USER_POOLS
       ProviderARNs:
-        - !GetAtt MovierUserPool.Arn
+        - !GetAtt MyCognitoUserPool.Arn
 
-  CommentsApi:
+  CommentApi:
     Type: AWS::Serverless::Api
     Properties:
-      Name: CommentsApi
+      Name: CommentApi
       StageName: Prod
       Auth:
         Authorizers:
-          CommenttAuthorizer:
-            UserPoolArn: !GetAtt MovierUserPool.Arn
+          CommentAuthorizerMovier:
+            UserPoolArn: !GetAtt MyCognitoUserPool.Arn
 
-  WatcheddAuthorizer:
+  WatchedAuthorizerMovier:
     Type: AWS::ApiGateway::Authorizer
     Properties:
-      Name: WatcheddAuthorizer
+      Name: WatchedAuthorizerMovier
       IdentitySource: method.request.header.Authorization
-      RestApiId: !Ref WatchedsAppi
+      RestApiId: !Ref WatchedApi
       Type: COGNITO_USER_POOLS
       ProviderARNs:
-        - !GetAtt MovierUserPool.Arn
+        - !GetAtt MyCognitoUserPool.Arn
 
-  WatchedsAppi:
+  WatchedApi:
     Type: AWS::Serverless::Api
     Properties:
-      Name: WatchedsAppi
+      Name: WatchedApi
       StageName: Prod
       Auth:
         Authorizers:
-          WatcheddAuthorizer:
-            UserPoolArn: !GetAtt MovierUserPool.Arn
+          WatchedAuthorizerMovier:
+            UserPoolArn: !GetAtt MyCognitoUserPool.Arn
 
-  LoginUsersFunction:
+  LoginFunction:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: login/login_users/
@@ -182,11 +182,11 @@ Resources:
         Login:
           Type: Api
           Properties:
-            RestApiId: !Ref AuthorizationApi
+            RestApiId: !Ref AuthApi
             Path: /login
             Method: post
 
-  SetPassFunction:
+  SetPasswordFunction:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: login/set_password/
@@ -199,11 +199,11 @@ Resources:
         SetPassword:
           Type: Api
           Properties:
-            RestApiId: !Ref AuthorizationApi
+            RestApiId: !Ref AuthApi
             Path: /set_password
             Method: post
 
-  RegisterUserFunction:
+  CreateUserFunction:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: login/insert_user_pool/
@@ -216,11 +216,11 @@ Resources:
         SetPassword:
           Type: Api
           Properties:
-            RestApiId: !Ref AuthorizationApi
+            RestApiId: !Ref AuthApi
             Path: /create_user
             Method: post
 
-  RegisterMovieFunction:
+  CreateMovieFunction:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: movies/create_movie/
@@ -233,12 +233,12 @@ Resources:
           Type: Api
           Properties:
             Path: /create
-            RestApiId: !Ref MoviesApi
+            RestApiId: !Ref MovieApi
             Method: post
             Auth:
-              Authorizer: MovieeAuthorizer
+              Authorizer: MovieAuthorizerMovier
 
-  GettMovieFunction:
+  GetMovieFunction:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: movies/get_movies/
@@ -251,12 +251,12 @@ Resources:
           Type: Api
           Properties:
             Path: /getAll
-            RestApiId: !Ref MoviesApi
+            RestApiId: !Ref MovieApi
             Method: get
             Auth:
-              Authorizer: MovieeAuthorizer
+              Authorizer: MovieAuthorizerMovier
 
-  GetAllMoviesFunction:
+  GetAllMovieFunction:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: movies/get_all_movies/
@@ -269,12 +269,12 @@ Resources:
           Type: Api
           Properties:
             Path: /getAllMovies
-            RestApiId: !Ref MoviesApi
+            RestApiId: !Ref MovieApi
             Method: get
             Auth:
-              Authorizer: MovieeAuthorizer
+              Authorizer: MovieAuthorizerMovier
 
-  GettMovieByIdFunction:
+  GetMovieByIdFunction:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: movies/get_movie_by_id/
@@ -287,12 +287,12 @@ Resources:
           Type: Api
           Properties:
             Path: /getMovie/{id}/{user_id}
-            RestApiId: !Ref MoviesApi
+            RestApiId: !Ref MovieApi
             Method: get
             Auth:
-              Authorizer: MovieeAuthorizer
+              Authorizer: MovieAuthorizerMovier
 
-  FindMoviesFunction:
+  SearchMoviesFunction:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: movies/search_movies/
@@ -305,12 +305,12 @@ Resources:
           Type: Api
           Properties:
             Path: /searchMovies/{name}
-            RestApiId: !Ref MoviesApi
+            RestApiId: !Ref MovieApi
             Method: get
             Auth:
-              Authorizer: MovieeAuthorizer
+              Authorizer: MovieAuthorizerMovier
 
-  ModifyMovieFunction:
+  UpdateMovieFunction:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: movies/update_movie/
@@ -323,12 +323,12 @@ Resources:
           Type: Api
           Properties:
             Path: /update/{id}
-            RestApiId: !Ref MoviesApi
+            RestApiId: !Ref MovieApi
             Method: put
             Auth:
-              Authorizer: MovieeAuthorizer
+              Authorizer: MovieAuthorizerMovier
 
-  ChangeStatusOfMovieFunction:
+  ChangeStatusMovieFunction:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: movies/change_status_movie/
@@ -341,12 +341,12 @@ Resources:
           Type: Api
           Properties:
             Path: /status/{id}
-            RestApiId: !Ref MoviesApi
+            RestApiId: !Ref MovieApi
             Method: patch
             Auth:
-              Authorizer: MovieeAuthorizer
+              Authorizer: MovieAuthorizerMovier
 
-  AddCommentFunction:
+  CreateCommentFunction:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: comments/create_comment/
@@ -359,12 +359,12 @@ Resources:
           Type: Api
           Properties:
             Path: /create
-            RestApiId: !Ref CommentsApi
+            RestApiId: !Ref CommentApi
             Method: post
             Auth:
-              Authorizer: CommenttAuthorizer
+              Authorizer: CommentAuthorizerMovier
 
-  GetCommentsOfMovieFunction:
+  GetCommentsFunction:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: comments/get_comments/
@@ -377,12 +377,12 @@ Resources:
           Type: Api
           Properties:
             Path: /getComment/{id}
-            RestApiId: !Ref CommentsApi
+            RestApiId: !Ref CommentApi
             Method: get
             Auth:
-              Authorizer: CommenttAuthorizer
+              Authorizer: CommentAuthorizerMovier
 
-  DropCommentFunction:
+  DeleteCommentFunction:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: comments/delete_comment/
@@ -395,12 +395,12 @@ Resources:
           Type: Api
           Properties:
             Path: /delete
-            RestApiId: !Ref CommentsApi
+            RestApiId: !Ref CommentApi
             Method: delete
             Auth:
-              Authorizer: CommenttAuthorizer
+              Authorizer: CommentAuthorizerMovier
 
-  SeenMovieFunction:
+  WatchedMovieFunction:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: watched/watched_movie/
@@ -413,12 +413,12 @@ Resources:
           Type: Api
           Properties:
             Path: /watched
-            RestApiId: !Ref WatchedsAppi
+            RestApiId: !Ref WatchedApi
             Method: post
             Auth:
-              Authorizer: WatcheddAuthorizer
+              Authorizer: WatchedAuthorizerMovier
 
-  GetSeenMovieFunction:
+  GetWatchedMovieFunction:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: watched/get_watched_movies_user/
@@ -431,114 +431,114 @@ Resources:
           Type: Api
           Properties:
             Path: /watched/user/{id}
-            RestApiId: !Ref WatchedsAppi
+            RestApiId: !Ref WatchedApi
             Method: get
             Auth:
-              Authorizer: WatcheddAuthorizer
+              Authorizer: WatchedAuthorizerMovier
 
 Outputs:
-  RegisterMovieApi:
+  CreateMovieApi:
     Description: "API Gateway endpoint URL for Prod stage for create movie function"
-    Value: !Sub "https://${MoviesApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/create"
-  RegisterMovieFunction:
+    Value: !Sub "https://${MovieApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/create"
+  CreateMovieFunction:
     Description: "Create Movie Lambda Function ARN"
-    Value: !GetAtt RegisterMovieFunction.Arn
+    Value: !GetAtt CreateMovieFunction.Arn
 
-  GettMovieApi:
+  GetMovieApi:
     Description: "API Gateway endpoint URL for Prod stage for get movies function"
-    Value: !Sub "https://${MoviesApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/getAll"
-  GettMovieFunction:
+    Value: !Sub "https://${MovieApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/getAll"
+  GetMovieFunction:
     Description: "Get Movie Lambda Function ARN"
-    Value: !GetAtt GettMovieFunction.Arn
+    Value: !GetAtt GetMovieFunction.Arn
 
-  GetAllMoviesApi:
+  GetAllMovieApi:
     Description: "API Gateway endpoint URL for Prod stage for get movies function"
-    Value: !Sub "https://${MoviesApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/getAllMovies"
-  GetAllMoviesFunction:
+    Value: !Sub "https://${MovieApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/getAllMovies"
+  GetAllMovieFunction:
     Description: "Get Movie Lambda Function ARN"
-    Value: !GetAtt GetAllMoviesFunction.Arn
+    Value: !GetAtt GetAllMovieFunction.Arn
 
-  GettMovieByIdApi:
+  GetMovieByIdApi:
     Description: "API Gateway endpoint URL for Prod stage for get movie by id function"
-    Value: !Sub "https://${MoviesApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/getMovie/{id}/{user_id}"
-  GettMovieByIdFunction:
+    Value: !Sub "https://${MovieApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/getMovie/{id}/{user_id}"
+  GetMovieByIdFunction:
     Description: "Get Movie Lambda Function ARN"
-    Value: !GetAtt GettMovieByIdFunction.Arn
-  FindMoviesApi:
+    Value: !GetAtt GetMovieByIdFunction.Arn
+  SearchMoviesApi:
     Description: "API Gateway endpoint URL for Prod stage for get movie by id function"
-    Value: !Sub "https://${MoviesApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/searchMovies/{name}"
-  FindMoviesFunction:
+    Value: !Sub "https://${MovieApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/searchMovies/{name}"
+  SearchMoviesFunction:
     Description: "Get Movie Lambda Function ARN"
-    Value: !GetAtt FindMoviesFunction.Arn
-  ModifyMovieApi:
+    Value: !GetAtt SearchMoviesFunction.Arn
+  UpdateMovieApi:
     Description: "API Gateway endpoint URL for Prod stage for update movie function"
-    Value: !Sub "https://${MoviesApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/update/{id}"
-  ModifyMovieFunction:
+    Value: !Sub "https://${MovieApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/update/{id}"
+  UpdateMovieFunction:
     Description: "Update Movie Lambda Function ARN"
-    Value: !GetAtt ModifyMovieFunction.Arn
+    Value: !GetAtt UpdateMovieFunction.Arn
 
-  ChangeStatusOfMovieApi:
+  StatusMovieApi:
     Description: "API Gateway endpoint URL for Prod stage for update movie function"
-    Value: !Sub "https://${MoviesApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/status/{id}"
-  ChangeStatusOfMovieFunction:
+    Value: !Sub "https://${MovieApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/status/{id}"
+  ChangeStatusMovieFunction:
     Description: "Update Movie Lambda Function ARN"
-    Value: !GetAtt ChangeStatusOfMovieFunction.Arn
+    Value: !GetAtt ChangeStatusMovieFunction.Arn
 
-  AddCommentApi:
+  CreateCommentApi:
     Description: "API Gateway endpoint URL for Prod stage for create comment function"
-    Value: !Sub "https://${CommentsApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/create"
-  AddCommentFunction:
+    Value: !Sub "https://${CommentApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/create"
+  CreateCommentFunction:
     Description: "Create Comment Lambda Function ARN"
-    Value: !GetAtt AddCommentFunction.Arn
+    Value: !GetAtt CreateCommentFunction.Arn
 
-  GetCommentsOfMovieApi:
+  GetCommentsApi:
     Description: "API Gateway endpoint URL for Prod stage for get comments function"
-    Value: !Sub "https://${CommentsApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/getComment/{id}"
-  GetCommentsOfMovieFunction:
+    Value: !Sub "https://${CommentApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/getComment/{id}"
+  GetCommentsFunction:
     Description: "Get Comments Lambda Function ARN"
-    Value: !GetAtt GetCommentsOfMovieFunction.Arn
+    Value: !GetAtt GetCommentsFunction.Arn
 
-  DropCommentApi:
+  DeleteCommentApi:
     Description: "API Gateway endpoint URL for Prod stage for delete comment function"
-    Value: !Sub "https://${CommentsApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/delete"
-  DropCommentFunction:
+    Value: !Sub "https://${CommentApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/delete"
+  DeleteCommentFunction:
     Description: "Delete Comment Lambda Function ARN"
-    Value: !GetAtt DropCommentFunction.Arn
+    Value: !GetAtt DeleteCommentFunction.Arn
 
-  SeenMovieApi:
+  WatchedMovieApi:
     Description: "API Gateway endpoint URL for Prod stage for watched movie function"
-    Value: !Sub "https://${WatchedsAppi}.execute-api.${AWS::Region}.amazonaws.com/Prod/watched"
-  SeenMovieFunction:
+    Value: !Sub "https://${WatchedApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/watched"
+  WatchedMovieFunction:
     Description: "Watched Movie Lambda Function ARN"
-    Value: !GetAtt SeenMovieFunction.Arn
+    Value: !GetAtt WatchedMovieFunction.Arn
 
-  GetSeenMovieApi:
+  GetWatchedMovieApi:
     Description: "API Gateway endpoint URL for Prod stage for watched movie function"
-    Value: !Sub "https://${WatchedsAppi}.execute-api.${AWS::Region}.amazonaws.com/Prod/watched"
-  GetSeenMovieFunction:
+    Value: !Sub "https://${WatchedApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/watched"
+  GetWatchedMovieFunction:
     Description: "Watched Movie Lambda Function ARN"
-    Value: !GetAtt GetSeenMovieFunction.Arn
+    Value: !GetAtt GetWatchedMovieFunction.Arn
 
-  LoginUsersApi:
-    Description: "API Gateway endpoint URL for LoginUsersFunction"
-    Value: !Sub "https://${AuthorizationApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/login"
-  LoginUsersFunction:
+  LoginApi:
+    Description: "API Gateway endpoint URL for LoginFunction"
+    Value: !Sub "https://${AuthApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/login"
+  LoginFunction:
     Description: "Login Lambda Function ARN"
-    Value: !GetAtt LoginUsersFunction.Arn
+    Value: !GetAtt LoginFunction.Arn
 
-  SetPassApi:
-    Description: "API Gateway endpoint URL for SetPassFunction"
-    Value: !Sub "https://${AuthorizationApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/set_password"
-  SetPassFunction:
+  SetPasswordApi:
+    Description: "API Gateway endpoint URL for SetPasswordFunction"
+    Value: !Sub "https://${AuthApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/set_password"
+  SetPasswordFunction:
     Description: "Set Password Lambda Function ARN"
-    Value: !GetAtt SetPassFunction.Arn
+    Value: !GetAtt SetPasswordFunction.Arn
 
-  RegisterUserApi:
-    Description: "API Gateway endpoint URL for RegisterUserFunction"
-    Value: !Sub "https://${AuthorizationApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/create_user"
-  RegisterUserFunction:
+  CreateUserApi:
+    Description: "API Gateway endpoint URL for CreateUserFunction"
+    Value: !Sub "https://${AuthApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/create_user"
+  CreateUserFunction:
     Description: "Create User Lambda Function ARN"
-    Value: !GetAtt RegisterUserFunction.Arn
+    Value: !GetAtt CreateUserFunction.Arn
 
   LambdaExecutionRole:
     Description: "Implicit IAM Role created for lambda functions"
