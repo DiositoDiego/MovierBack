@@ -72,37 +72,6 @@ Resources:
                 Action:
                   - secretsmanager:GetSecretValue
                 Resource: "arn:aws:secretsmanager:us-east-1:*"
-
-  MyCognitoUserPool:
-    Type: AWS::Cognito::UserPool
-    Properties:
-      UserPoolName: Movier2
-      UsernameAttributes:
-        - email
-      AutoVerifiedAttributes:
-        - email
-      Policies:
-        PasswordPolicy:
-          MinimumLength: 8
-          RequireUppercase: True
-          RequireLowercase: True
-          RequireNumbers: True
-          RequireSymbols: True
-
-  AdminGroup:
-    Type: AWS::Cognito::UserPoolGroup
-    Properties:
-      GroupName: Administrador
-      UserPoolId: !Ref MyCognitoUserPool
-      Precedence: 1
-
-  UsersGroup:
-    Type: AWS::Cognito::UserPoolGroup
-    Properties:
-      GroupName: Usuario
-      UserPoolId: !Ref MyCognitoUserPool
-      Precedence: 2
-                Resource: 'arn:aws:secretsmanager:us-east-1:*'
         - PolicyName: MovierRDS
           PolicyDocument:
             Version: '2012-10-17'
@@ -126,6 +95,7 @@ Resources:
                   - secretsmanager:CreateSecret
                   - secretsmanager:PutSecretValue
                 Resource: "*"
+
   VPC:
     Type: AWS::EC2::VPC
     Properties:
@@ -143,6 +113,7 @@ Resources:
       Tags:
         - Key: Name
           Value: !Sub "${AWS::StackName}-PublicRouteTable"
+
   PublicRoute:
     Type: AWS::EC2::Route
     DependsOn: InternetGatewayAttachment
@@ -223,7 +194,6 @@ Resources:
         - Key: Name
           Value: !Sub "${AWS::StackName}-SecurityGroup"
 
-
   RDSSecret:
     Type: AWS::SecretsManager::Secret
     Properties:
@@ -233,7 +203,6 @@ Resources:
         GenerateStringKey: "password"
         PasswordLength: 20
         ExcludeCharacters: '"@/\\'
-
 
   RDSInstance:
     Type: AWS::RDS::DBInstance
@@ -256,6 +225,36 @@ Resources:
         - Key: Name
           Value: !Sub "${AWS::StackName}-Instance"
       DeletionProtection: false
+
+  MyCognitoUserPool:
+    Type: AWS::Cognito::UserPool
+    Properties:
+      UserPoolName: Movier2
+      UsernameAttributes:
+        - email
+      AutoVerifiedAttributes:
+        - email
+      Policies:
+        PasswordPolicy:
+          MinimumLength: 8
+          RequireUppercase: True
+          RequireLowercase: True
+          RequireNumbers: True
+          RequireSymbols: True
+
+  AdminGroup:
+    Type: AWS::Cognito::UserPoolGroup
+    Properties:
+      GroupName: Administrador
+      UserPoolId: !Ref MyCognitoUserPool
+      Precedence: 1
+
+  UsersGroup:
+    Type: AWS::Cognito::UserPoolGroup
+    Properties:
+      GroupName: Usuario
+      UserPoolId: !Ref MyCognitoUserPool
+      Precedence: 2
 
   AuthApi:
     Type: AWS::Serverless::Api
