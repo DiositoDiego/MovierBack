@@ -33,7 +33,7 @@ def lambda_handler(event, context):
     try:
         # Configura el cliente de Cognito
         client = boto3.client('cognito-idp', region_name='us-east-1')
-        user_pool_id = "us-east-1_5v7VOqc0d"
+        user_pool_id = "us-east-1_tIlTA3kOz"
 
         # Crea el usuario con correo no verificado y contraseña temporal que se envia automaticamente a su correo
         client.admin_create_user(

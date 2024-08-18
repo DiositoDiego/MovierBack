@@ -71,7 +71,7 @@ Resources:
               - Effect: Allow
                 Action:
                   - secretsmanager:GetSecretValue
-                Resource: "arn:aws:secretsmanager:us-east-1:533267376951:secret:prd/dataBase/appMovier-123456"
+                Resource: "arn:aws:secretsmanager:us-east-1:*"
 
   MyCognitoUserPool:
     Type: AWS::Cognito::UserPool
