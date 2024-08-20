@@ -227,6 +227,13 @@ Resources:
           Value: !Sub "${AWS::StackName}-Instance"
       DeletionProtection: false
 
+  S3Bucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: dudu-bucket2
+      VersioningConfiguration:
+        Status: Enabled
+
   MyCognitoUserPool:
     Type: AWS::Cognito::UserPool
     Properties:
@@ -269,7 +276,6 @@ Resources:
       Name: MovieApi
       StageName: Prod
       Auth:
-        DefaultAuthorizer: CognitoAuthorizer
         Authorizers:
           CognitoAuthorizer:
             UserPoolArn: !GetAtt MyCognitoUserPool.Arn
@@ -280,7 +286,6 @@ Resources:
       Name: CommentApi
       StageName: Prod
       Auth:
-        DefaultAuthorizer: CognitoAuthorizer
         Authorizers:
           CognitoAuthorizer:
             UserPoolArn: !GetAtt MyCognitoUserPool.Arn
@@ -291,7 +296,6 @@ Resources:
       Name: WatchedApi
       StageName: Prod
       Auth:
-        DefaultAuthorizer: CognitoAuthorizer
         Authorizers:
           CognitoAuthorizer:
             UserPoolArn: !GetAtt MyCognitoUserPool.Arn
