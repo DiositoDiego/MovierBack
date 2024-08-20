@@ -233,6 +233,12 @@ Resources:
       BucketName: dudu-bucket2
       VersioningConfiguration:
         Status: Enabled
+  MySecret:
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Name: appMovierSecret
+      Description: "Secrets for Movier application"
+      SecretString: !Sub |
 
   MyCognitoUserPool:
     Type: AWS::Cognito::UserPool
