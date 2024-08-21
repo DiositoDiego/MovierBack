@@ -5,7 +5,7 @@ from movies.change_status_movie.app import lambda_handler, toggle_movie_status
 from movies.change_status_movie.utils import get_connection
 
 
-class TestChangeStatusMovie(unittest.TestCase):
+class TestApp(unittest.TestCase):
 
     @patch('movies.change_status_movie.app.get_connection')
     def test_lambda_handler_success(self, mock_get_connection):

@@ -6,7 +6,7 @@ from botocore.exceptions import ClientError
 from movies.update_movie import app
 from movies.update_movie.utils import get_secret, get_connection
 
-class TestUpdateMoviesApp(unittest.TestCase):
+class TestApp(unittest.TestCase):
 
     # Prueba: caso exitoso
     @patch("movies.update_movie.app.update_movie")

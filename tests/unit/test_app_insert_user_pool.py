@@ -7,7 +7,7 @@ from botocore.exceptions import ClientError
 from login.insert_user_pool import app
 
 
-class TestInsertUserPool(unittest.TestCase):
+class TestApp(unittest.TestCase):
 
     # Prueba: caso exitoso de creación de usuario
     @patch("login.insert_user_pool.app.insert_db")

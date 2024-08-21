@@ -5,7 +5,7 @@ from login.set_password.app import lambda_handler, insert_db
 from botocore.exceptions import ClientError
 
 
-class TestSetPasswordLambda(unittest.TestCase):
+class TestApp(unittest.TestCase):
 
     @patch('login.set_password.app.pymysql.connect')
     @patch('login.set_password.app.boto3.client')

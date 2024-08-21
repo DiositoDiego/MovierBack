@@ -5,7 +5,7 @@ from botocore.exceptions import ClientError
 from login.login_users.app import lambda_handler, select_id
 
 
-class TestLambdaHandler(unittest.TestCase):
+class TestApp(unittest.TestCase):
 
     @patch('login.login_users.app.pymysql.connect')
     @patch('login.login_users.app.boto3.client')
